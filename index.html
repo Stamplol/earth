@@ -178,6 +178,7 @@
       border-right: 1px solid rgba(255, 255, 255, 0.08);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 2px;
+      pointer-events: auto;
     }
 
     .sim-title-strip h1 {
@@ -1099,6 +1100,546 @@
         padding: 10px 12px 14px;
       }
     }
+
+    /* =========================================================================
+       HIDDEN MODE: PROJECT IMPACTOR (ASTEROID IMPACT PHYSICS SIMULATOR)
+       Completely hidden until unlocked via secret trigger
+       ========================================================================= */
+    #impact-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 65;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(circle at center, rgba(255, 245, 210, 0.92), rgba(255, 118, 36, 0.55) 45%, rgba(255, 40, 0, 0) 80%);
+      transition: opacity 0.08s linear;
+    }
+
+    #impact-unlock-toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-18px);
+      z-index: 95;
+      padding: 9px 18px;
+      background: rgba(18, 10, 12, 0.94);
+      border: 1px solid rgba(255, 92, 42, 0.72);
+      box-shadow: 0 0 28px rgba(255, 80, 20, 0.35);
+      border-radius: 3px;
+      color: #ffedd5;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #impact-unlock-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #impact-top-bar,
+    #impact-lab-panel,
+    #impact-telemetry-panel,
+    #impact-hint-bar {
+      display: none;
+    }
+
+    body.impact-mode #quick-bar,
+    body.impact-mode #info-drawer,
+    body.impact-mode #hint-banner {
+      display: none !important;
+    }
+
+    body.impact-mode #sim-title-strip {
+      border-color: rgba(255, 96, 46, 0.55);
+      box-shadow: 0 0 18px rgba(255, 72, 24, 0.16);
+    }
+
+    body.impact-mode #impact-top-bar {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 32;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      background: rgba(11, 14, 21, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 105, 52, 0.36);
+      border-radius: 3px;
+      max-width: calc(100vw - 348px);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .imp-top-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .imp-top-sep {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0 2px;
+    }
+
+    .imp-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 26px;
+      padding: 0 9px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+    }
+
+    .imp-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .imp-btn.active {
+      background: rgba(255, 96, 46, 0.22);
+      border-color: rgba(255, 118, 68, 0.72);
+      color: #fff7ed;
+    }
+
+    .imp-btn.fire {
+      background: linear-gradient(180deg, rgba(249, 83, 34, 0.92), rgba(204, 46, 18, 0.92));
+      border-color: rgba(255, 162, 114, 0.8);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 0 12px;
+    }
+
+    .imp-btn.fire:hover {
+      background: linear-gradient(180deg, rgba(255, 102, 48, 0.98), rgba(226, 56, 22, 0.98));
+    }
+
+    .imp-btn.swarm {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: rgba(251, 191, 36, 0.52);
+      color: #fef3c7;
+    }
+
+    .imp-btn.danger-outline {
+      border-color: rgba(248, 113, 113, 0.45);
+      color: #fecaca;
+    }
+
+    .imp-btn.danger-outline:hover {
+      background: rgba(239, 68, 68, 0.22);
+    }
+
+    .imp-mobile-only {
+      display: none;
+    }
+
+    /* Left Customizer Panel */
+    body.impact-mode #impact-lab-panel {
+      position: fixed;
+      top: 72px;
+      left: 14px;
+      bottom: 44px;
+      width: 318px;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      background: rgba(9, 13, 20, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 108, 56, 0.28);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    /* Right Telemetry Panel */
+    body.impact-mode #impact-telemetry-panel {
+      position: fixed;
+      top: 72px;
+      right: 14px;
+      bottom: 44px;
+      width: 314px;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      background: rgba(9, 13, 20, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .imp-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 11px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      flex-shrink: 0;
+    }
+
+    .imp-panel-kicker {
+      font-family: var(--font-display);
+      font-size: 0.64rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fb923c;
+    }
+
+    .imp-panel-title {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .imp-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 11px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .imp-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .imp-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .imp-sec-label {
+      font-family: var(--font-display);
+      font-size: 0.66rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .imp-preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .imp-preset-btn {
+      padding: 5px 7px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 0.69rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+    }
+
+    .imp-preset-btn strong {
+      font-size: 0.71rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .imp-preset-btn span {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .imp-preset-btn:hover {
+      background: rgba(255, 108, 56, 0.12);
+      border-color: rgba(255, 118, 68, 0.45);
+    }
+
+    .imp-preset-btn.active {
+      background: rgba(255, 96, 46, 0.22);
+      border-color: rgba(255, 128, 72, 0.85);
+    }
+
+    .imp-seg-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .imp-seg-btn {
+      padding: 5px 4px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.14s ease;
+    }
+
+    .imp-seg-btn.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.72);
+      color: #e0f2fe;
+      font-weight: 600;
+    }
+
+    .imp-slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .imp-slider-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+
+    .imp-slider-val {
+      font-family: var(--font-display);
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: #fdba74;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .imp-range {
+      width: 100%;
+      accent-color: #f97316;
+      cursor: pointer;
+      height: 16px;
+    }
+
+    .imp-select {
+      width: 100%;
+      padding: 5px 8px;
+      background: rgba(15, 23, 36, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 2px;
+      color: #f1f5f9;
+      font-family: var(--font-body);
+      font-size: 0.73rem;
+      cursor: pointer;
+    }
+
+    .imp-toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .imp-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .imp-toggle input {
+      accent-color: #f97316;
+      cursor: pointer;
+    }
+
+    /* Telemetry Cards */
+    .imp-vital-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .imp-vital-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #22c55e, #38bdf8);
+      transition: width 0.35s ease, background 0.35s ease;
+    }
+
+    .imp-kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .imp-kv {
+      padding: 5px 7px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 2px;
+    }
+
+    .imp-kv-k {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+    }
+
+    .imp-kv-v {
+      font-family: var(--font-display);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      font-variant-numeric: tabular-nums;
+      margin-top: 1px;
+    }
+
+    .imp-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-family: var(--font-display);
+      font-size: 0.64rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .imp-badge.ok { background: rgba(34, 197, 94, 0.18); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.4); }
+    .imp-badge.warn { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.45); }
+    .imp-badge.crit { background: rgba(239, 68, 68, 0.24); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.55); }
+    .imp-badge.air { background: rgba(56, 189, 248, 0.22); color: #bae6fd; border: 1px solid rgba(56, 189, 248, 0.5); }
+
+    .imp-report-card {
+      padding: 8px 9px;
+      background: rgba(255, 86, 36, 0.07);
+      border: 1px solid rgba(255, 110, 56, 0.28);
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .imp-log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 170px;
+      overflow-y: auto;
+    }
+
+    .imp-log-item {
+      padding: 5px 7px;
+      background: rgba(255, 255, 255, 0.025);
+      border-left: 2px solid #f97316;
+      font-size: 0.67rem;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    .imp-log-item.airburst { border-left-color: #38bdf8; }
+    .imp-log-item.roche { border-left-color: #eab308; }
+    .imp-log-item.flyby { border-left-color: #a78bfa; }
+
+    body.impact-mode #impact-hint-bar {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 28;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      background: rgba(10, 14, 22, 0.86);
+      border: 1px solid rgba(255, 120, 66, 0.34);
+      border-radius: 2px;
+      font-size: 0.72rem;
+      color: #fed7aa;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1080px) {
+      body.impact-mode #impact-lab-panel,
+      body.impact-mode #impact-telemetry-panel {
+        width: 282px;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .imp-mobile-only {
+        display: inline-flex;
+      }
+      body.impact-mode #impact-top-bar {
+        top: 56px;
+        left: 8px;
+        right: 8px;
+        max-width: calc(100vw - 16px);
+        justify-content: center;
+        padding: 4px 6px;
+        gap: 4px;
+      }
+      body.impact-mode #impact-lab-panel,
+      body.impact-mode #impact-telemetry-panel {
+        top: 104px;
+        bottom: 42px;
+        width: min(320px, calc(100vw - 16px));
+        display: none;
+      }
+      body.impact-mode.imp-open-lab #impact-lab-panel {
+        display: flex;
+        left: 8px;
+      }
+      body.impact-mode.imp-open-tel #impact-telemetry-panel {
+        display: flex;
+        right: 8px;
+      }
+      body.impact-mode #impact-hint-bar {
+        font-size: 0.66rem;
+        white-space: normal;
+        text-align: center;
+        max-width: calc(100vw - 16px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1325,6 +1866,195 @@
       <button id="btn-next-layer" class="nav-step-btn" type="button">ชั้นถัดไป →</button>
     </div>
   </aside>
+
+  <!-- =========================================================================
+       HIDDEN ASTEROID IMPACT SIMULATOR (PROJECT IMPACTOR)
+       ========================================================================= -->
+  <div id="impact-flash" aria-hidden="true"></div>
+  <div id="impact-unlock-toast" role="status" aria-live="polite"></div>
+
+  <div id="impact-top-bar" role="toolbar" aria-label="แผงควบคุมการจำลองดาวเคราะห์น้อยพุ่งชนโลก">
+    <div class="imp-top-group" role="group" aria-label="อัตราเร่งเวลา">
+      <button class="imp-btn imp-time-btn" data-scale="0" type="button" title="หยุดเวลาชั่วคราว">⏸</button>
+      <button class="imp-btn imp-time-btn" data-scale="0.05" type="button" title="สโลว์โมชัน 0.05x">0.05×</button>
+      <button class="imp-btn imp-time-btn" data-scale="0.25" type="button" title="สโลว์ 0.25x">0.25×</button>
+      <button class="imp-btn imp-time-btn active" data-scale="1" type="button" title="ความเร็วมาตรฐาน 1x (3 นาที/วิ)">1×</button>
+      <button class="imp-btn imp-time-btn" data-scale="5" type="button" title="เร่งเวลา 5x">5×</button>
+      <button class="imp-btn imp-time-btn" data-scale="25" type="button" title="เร่งเวลาวงโคจร 25x">25×</button>
+    </div>
+
+    <div class="imp-top-sep" aria-hidden="true"></div>
+
+    <div class="imp-top-group">
+      <button id="imp-btn-fire" class="imp-btn fire" type="button" title="ยิงดาวเคราะห์น้อยใส่โลกทันที">🔥 ยิงเลย</button>
+      <button id="imp-btn-swarm" class="imp-btn swarm" type="button" title="ปล่อยฝูงดาวเคราะห์น้อย">☄️ ฝนดาวตก</button>
+      <button id="imp-btn-spin" class="imp-btn active" type="button" title="เปิด/ปิดการหมุนของโลก">🌐 หมุนโลก</button>
+      <button id="imp-btn-clouds" class="imp-btn active" type="button" title="เปิด/ปิดชั้นเมฆ">☁️ เมฆ</button>
+      <button id="imp-btn-reset" class="imp-btn danger-outline" type="button" title="ล้างหลุมอุกกาบาตและฟื้นฟูโลก">🧹 ฟื้นฟูโลก</button>
+    </div>
+
+    <div class="imp-top-sep" aria-hidden="true"></div>
+
+    <div class="imp-top-group">
+      <button id="imp-btn-mob-lab" class="imp-btn imp-mobile-only" type="button">⚙️ ปรับแต่ง</button>
+      <button id="imp-btn-mob-tel" class="imp-btn imp-mobile-only" type="button">📊 ฟิสิกส์</button>
+      <button id="imp-btn-exit" class="imp-btn" type="button" title="ออกจากโหมดลับ (Esc)">✕ ออก</button>
+    </div>
+  </div>
+
+  <!-- Left Panel: Asteroid Customizer & Physics Engine Controls -->
+  <aside id="impact-lab-panel" aria-label="ปรับแต่งดาวเคราะห์น้อยและฟิสิกส์">
+    <div class="imp-panel-head">
+      <div>
+        <div class="imp-panel-kicker">PROJECT IMPACTOR // RK4 PHYSICS</div>
+        <div class="imp-panel-title">เครื่องยิงดาวเคราะห์น้อย (Customizer)</div>
+      </div>
+      <span id="imp-active-count" class="imp-badge air">0 IN FLIGHT</span>
+    </div>
+
+    <div class="imp-panel-body">
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>พรีเซ็ตเหตุการณ์จริง &amp; ไซไฟ (Presets)</span></div>
+        <div class="imp-preset-grid" id="imp-preset-grid">
+          <button class="imp-preset-btn" data-preset="chelyabinsk" type="button"><strong>Chelyabinsk (2013)</strong><span>20 ม. · 19 กม./วิ · แตกกลางอากาศ</span></button>
+          <button class="imp-preset-btn" data-preset="tunguska" type="button"><strong>Tunguska (1908)</strong><span>65 ม. · 27 กม./วิ · Airburst</span></button>
+          <button class="imp-preset-btn" data-preset="barringer" type="button"><strong>Meteor Crater</strong><span>50 ม. เหล็ก · 12.8 กม./วิ</span></button>
+          <button class="imp-preset-btn" data-preset="apophis" type="button"><strong>Apophis (99942)</strong><span>370 ม. หิน · 12.6 กม./วิ</span></button>
+          <button class="imp-preset-btn active" data-preset="chicxulub" type="button"><strong>Chicxulub (ล้างไดโนเสาร์)</strong><span>11 กม. · 20 กม./วิ · 100M Mt</span></button>
+          <button class="imp-preset-btn" data-preset="vesta" type="button"><strong>Vesta Planet-Killer</strong><span>525 กม. · 22 กม./วิ · หลอมเปลือก</span></button>
+          <button class="imp-preset-btn" data-preset="theia" type="button"><strong>Theia (กำเนิดดวงจันทร์)</strong><span>6,100 กม. · 10 กม./วิ · 45°</span></button>
+          <button class="imp-preset-btn" data-preset="tungsten" type="button"><strong>Rods from God</strong><span>6 ม. ทังสเตน · 11 กม./วิ · 85°</span></button>
+          <button class="imp-preset-btn" data-preset="relativistic" type="button"><strong>Relativistic 0.17c</strong><span>10 ม. เหล็ก · 50,000 กม./วิ</span></button>
+          <button class="imp-preset-btn" data-preset="roche" type="button"><strong>Roche Tidal Comet</strong><span>18 กม. น้ำแข็ง · 9 กม./วิ · 12°</span></button>
+        </div>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>โหมดการยิง (Launch Mode)</span></div>
+        <div class="imp-seg-row" id="imp-mode-row">
+          <button class="imp-seg-btn active" data-lmode="aim" type="button">🎯 คลิกยิงเป้า</button>
+          <button class="imp-seg-btn" data-lmode="slingshot" type="button">🛸 ยิงวงโคจร</button>
+          <button class="imp-seg-btn" data-lmode="barrage" type="button">☄️ ฝนอุกกาบาต</button>
+        </div>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>พารามิเตอร์ดาวเคราะห์น้อย (Parameters)</span><span id="imp-mass-preview"></span></div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>เส้นผ่านศูนย์กลาง (Diameter)</span><span class="imp-slider-val" id="imp-val-diam">11.0 km</span></div>
+          <input id="imp-sl-diam" class="imp-range" type="range" min="0" max="1000" value="593" />
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>ความเร็วเริ่มต้น (Velocity)</span><span class="imp-slider-val" id="imp-val-vel">20.0 km/s</span></div>
+          <input id="imp-sl-vel" class="imp-range" type="range" min="0" max="1000" value="260" />
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>องค์ประกอบวัสดุ (Composition)</span></div>
+          <select id="imp-sel-comp" class="imp-select">
+            <option value="ice">ดาวหางน้ำแข็ง (Ice / Comet · 900 kg/m³)</option>
+            <option value="rubble">กองหินหลวม (Porous Rubble · 1,500 kg/m³)</option>
+            <option value="carbon" selected>คาร์บอนาเชียส C-Type (2,200 kg/m³)</option>
+            <option value="stony">หินซิลิเกต S-Type Chondrite (3,300 kg/m³)</option>
+            <option value="iron">เหล็ก-นิกเกิล M-Type (7,870 kg/m³)</option>
+            <option value="tungsten">ทังสเตนบริสุทธิ์ (Tungsten · 19,300 kg/m³)</option>
+            <option value="custom">กำหนดเอง (Custom Density &amp; Strength)</option>
+          </select>
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>ความหนาแน่น (Density ρ)</span><span class="imp-slider-val" id="imp-val-dens">2,200 kg/m³</span></div>
+          <input id="imp-sl-dens" class="imp-range" type="range" min="0" max="1000" value="434" />
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>กำลังต้านแรงเฉือน (Yield Strength)</span><span class="imp-slider-val" id="imp-val-yield">2.0 MPa</span></div>
+          <input id="imp-sl-yield" class="imp-range" type="range" min="0" max="1000" value="302" />
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>มุมพุ่งชน (Entry Angle θ)</span><span class="imp-slider-val" id="imp-val-angle">60°</span></div>
+          <input id="imp-sl-angle" class="imp-range" type="range" min="5" max="90" value="60" />
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>ระยะปล่อยตัว (Launch Distance)</span><span class="imp-slider-val" id="imp-val-dist">3.6 R⊕</span></div>
+          <input id="imp-sl-dist" class="imp-range" type="range" min="16" max="110" value="36" />
+        </div>
+
+        <div class="imp-slider-row">
+          <div class="imp-slider-head"><span>จำนวนฝนอุกกาบาต (Swarm Count)</span><span class="imp-slider-val" id="imp-val-swarm">8 ลูก</span></div>
+          <input id="imp-sl-swarm" class="imp-range" type="range" min="3" max="24" value="8" />
+        </div>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>แบบจำลองฟิสิกส์จริง (Physics Engine)</span></div>
+        <div class="imp-toggle-grid">
+          <label class="imp-toggle"><input id="imp-chk-grav" type="checkbox" checked /> แรงโน้มถ่วง RK4+J2</label>
+          <label class="imp-toggle"><input id="imp-chk-atmo" type="checkbox" checked /> บรรยากาศ &amp; Airburst</label>
+          <label class="imp-toggle"><input id="imp-chk-roche" type="checkbox" checked /> แรงไทดัล Roche</label>
+          <label class="imp-toggle"><input id="imp-chk-moon" type="checkbox" checked /> แรงดึงดูดดวงจันทร์</label>
+          <label class="imp-toggle"><input id="imp-chk-prev" type="checkbox" checked /> เส้นวิถีคาดการณ์</label>
+          <label class="imp-toggle"><input id="imp-chk-sfx" type="checkbox" checked /> เสียง &amp; แรงสั่น</label>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Panel: Real-Time Planetary Vitals & Collins-Melosh Impact Telemetry -->
+  <aside id="impact-telemetry-panel" aria-label="ข้อมูลฟิสิกส์การชนและสถานะโลก">
+    <div class="imp-panel-head">
+      <div>
+        <div class="imp-panel-kicker" style="color:#38bdf8;">COLLINS-MELOSH-MARCUS (2005)</div>
+        <div class="imp-panel-title">ผลลัพธ์ทางฟิสิกส์ &amp; สถานะโลก</div>
+      </div>
+      <span id="imp-earth-status-badge" class="imp-badge ok">HABITABLE</span>
+    </div>
+
+    <div class="imp-panel-body">
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>ความสมบูรณ์ของชีวมณฑล (Biosphere)</span><span id="imp-bio-pct">100.0%</span></div>
+        <div class="imp-vital-bar"><div id="imp-bio-fill" class="imp-vital-fill"></div></div>
+        <div class="imp-kv-grid">
+          <div class="imp-kv"><div class="imp-kv-k">อุณหภูมิเฉลี่ยโลก (ΔT)</div><div class="imp-kv-v" id="imp-earth-dt">+0.0 °C</div></div>
+          <div class="imp-kv"><div class="imp-kv-k">การหลอมเหลวเปลือกโลก</div><div class="imp-kv-v" id="imp-earth-melt">0.0%</div></div>
+          <div class="imp-kv"><div class="imp-kv-k">พลังงานสะสม (Total Mt)</div><div class="imp-kv-v" id="imp-earth-energy">0 Mt</div></div>
+          <div class="imp-kv"><div class="imp-kv-k">จำนวนชน · Earth Δv</div><div class="imp-kv-v" id="imp-earth-hits">0 · 0 m/s</div></div>
+        </div>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>คาดการณ์ก่อนยิง (Live Aim Predictor)</span></div>
+        <div class="imp-kv-grid">
+          <div class="imp-kv"><div class="imp-kv-k">พิกัดเป้าหมาย (Lat/Lon)</div><div class="imp-kv-v" id="imp-pred-coord">เล็งที่โลกเพื่อดูพิกัด</div></div>
+          <div class="imp-kv"><div class="imp-kv-k">ภูมิประเทศ (ETOPO1/Moho)</div><div class="imp-kv-v" id="imp-pred-terrain">—</div></div>
+          <div class="imp-kv"><div class="imp-kv-k">พลังงานจลน์ (Relativistic)</div><div class="imp-kv-v" id="imp-pred-energy">—</div></div>
+          <div class="imp-kv"><div class="imp-kv-k">หลุมคาดการณ์ / Airburst</div><div class="imp-kv-v" id="imp-pred-crater">—</div></div>
+        </div>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>รายงานการชนล่าสุด (Latest Impact)</span><span id="imp-last-type" class="imp-badge air">STANDBY</span></div>
+        <div class="imp-report-card" id="imp-last-report">
+          <div style="font-size:0.71rem; color:var(--text-secondary); line-height:1.45;">
+            คลิกบนพื้นผิวโลกเพื่อยิงดาวเคราะห์น้อยตามแนววิถีโค้งแรงโน้มถ่วงจริง หรือกด <strong>🔥 ยิงเลย</strong> เพื่อเริ่มทดสอบ!
+          </div>
+        </div>
+      </div>
+
+      <div class="imp-section">
+        <div class="imp-sec-label"><span>บันทึกเหตุการณ์ (Impact Log)</span><span id="imp-log-count">0</span></div>
+        <div class="imp-log-list" id="imp-log-list"></div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="impact-hint-bar" aria-live="polite">
+    🎯 โหมดเล็งเป้า: เลื่อนเมาส์บนโลกเพื่อดูเส้นโค้ง RK4 • คลิกเพื่อยิงดาวเคราะห์น้อย • ลากเพื่อหมุนมุมกล้อง • Esc เพื่อออก
+  </div>
 
   <script type="module">
     import * as THREE from 'three';
@@ -2442,7 +3172,13 @@
         cityLightsMap: makeTex(cityCanvas, true, true),
         crustDepthMap: makeTex(crustDepthCanvas, false, true),
         cloudMap: makeTex(cloudCanvas, false, true),
-        milkyWayMap: makeTex(mwCanvas, true, true)
+        milkyWayMap: makeTex(mwCanvas, true, true),
+        heightField,
+        texW: W,
+        texH: H,
+        sciGrids,
+        sgW,
+        sgH
       };
     }
 
@@ -2490,7 +3226,7 @@
       }
     `;
 
-    function createEarthSurfaceMaterial(textures, sunDirUniform, highlightUniforms, cloudOffsetUniform, cloudOpacityUniform) {
+    function createEarthSurfaceMaterial(textures, sunDirUniform, highlightUniforms, cloudOffsetUniform, cloudOpacityUniform, impactUniforms = null) {
       const mat = new THREE.MeshStandardMaterial({
         map: textures.albedoMap,
         normalMap: textures.normalMap,
@@ -2501,6 +3237,14 @@
         transparent: false
       });
 
+      const impU = impactUniforms || {
+        uImpactCount: { value: 0 },
+        uImpacts: { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 1, 0, 0)) },
+        uImpactMeta: { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 0, 0, 0)) },
+        uGlobalMelt: { value: 0.0 },
+        uImpactTime: { value: 0.0 }
+      };
+
       mat.onBeforeCompile = (shader) => {
         shader.uniforms.uSunDir = sunDirUniform;
         shader.uniforms.uCityLights = { value: textures.cityLightsMap };
@@ -2509,6 +3253,11 @@
         shader.uniforms.uCloudOpacity = cloudOpacityUniform;
         shader.uniforms.uHighlight = highlightUniforms.uHighlight;
         shader.uniforms.uHighlightColor = highlightUniforms.uHighlightColor;
+        shader.uniforms.uImpactCount = impU.uImpactCount;
+        shader.uniforms.uImpacts = impU.uImpacts;
+        shader.uniforms.uImpactMeta = impU.uImpactMeta;
+        shader.uniforms.uGlobalMelt = impU.uGlobalMelt;
+        shader.uniforms.uImpactTime = impU.uImpactTime;
 
         shader.vertexShader = shader.vertexShader
           .replace(
@@ -2519,6 +3268,7 @@
             varying vec3 vWorldNormEarth;
             varying vec3 vWorldTanEarth;
             varying vec3 vWorldBitanEarth;
+            varying vec3 vLocalDirEarth;
             varying vec2 vEarthUv;
             `
           )
@@ -2529,6 +3279,7 @@
             vec4 eWorldPos = modelMatrix * vec4(transformed, 1.0);
             vWorldPosEarth = eWorldPos.xyz;
             vWorldNormEarth = normalize(mat3(modelMatrix) * objectNormal);
+            vLocalDirEarth = normalize(position);
             vec3 localTan = length(transformed.xz) > 0.001
               ? normalize(vec3(transformed.z, 0.0, -transformed.x))
               : vec3(1.0, 0.0, 0.0);
@@ -2543,6 +3294,7 @@
             '#include <common>',
             /* glsl */ `
             #include <common>
+            ${GLSL_NOISE_3D}
             uniform vec3 uSunDir;
             uniform sampler2D uCityLights;
             uniform sampler2D uCloudMap;
@@ -2550,10 +3302,16 @@
             uniform float uCloudOpacity;
             uniform float uHighlight;
             uniform vec3 uHighlightColor;
+            uniform int uImpactCount;
+            uniform vec4 uImpacts[24];
+            uniform vec4 uImpactMeta[24];
+            uniform float uGlobalMelt;
+            uniform float uImpactTime;
             varying vec3 vWorldPosEarth;
             varying vec3 vWorldNormEarth;
             varying vec3 vWorldTanEarth;
             varying vec3 vWorldBitanEarth;
+            varying vec3 vLocalDirEarth;
             varying vec2 vEarthUv;
             `
           )
@@ -2579,6 +3337,86 @@
               float dayStr = smoothstep(-0.04, 0.25, nSun);
               diffuseColor.rgb *= (1.0 - 0.32 * cCov * dayStr);
             }
+
+            // Procedural Rotating Asteroid Impact Scars, Ejecta Blankets & Crustal Melt
+            float impCharMask = 0.0;
+            vec3 impMagmaGlow = vec3(0.0);
+            if (uImpactCount > 0 || uGlobalMelt > 0.001) {
+              vec3 lDir = normalize(vLocalDirEarth);
+              float nDetail = fbm3(lDir * 24.0);
+              float nFine = snoise(lDir * 64.0);
+
+              for (int i = 0; i < 24; i++) {
+                if (i >= uImpactCount) break;
+                vec4 imp = uImpacts[i];
+                vec4 meta = uImpactMeta[i];
+                float rad = imp.w;
+                if (rad <= 0.0001) continue;
+
+                float cosAng = clamp(dot(lDir, imp.xyz), -1.0, 1.0);
+                // Quick angular cull for performance
+                float maxCos = cos(min(3.14, rad * 3.0));
+                if (cosAng < maxCos) continue;
+
+                float ang = acos(cosAng);
+                float roughEdge = rad * (0.86 + 0.24 * nDetail + 0.08 * nFine);
+                float normDist = ang / max(0.0005, roughEdge);
+
+                float age = meta.x;
+                float heatPower = meta.y;
+                float isOcean = meta.z;
+                float isAirburst = meta.w;
+
+                // Cooling curve: massive craters remain molten much longer
+                float coolRate = mix(0.055, 0.004, clamp(rad * 4.5, 0.0, 1.0));
+                float heat = heatPower * exp(-age * coolRate);
+
+                if (isAirburst > 0.5) {
+                  // Atmospheric airburst: scorched blast circle + quick cooling flash
+                  float scorch = smoothstep(1.35, 0.15, normDist) * 0.52;
+                  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.11, 0.09, 0.08), scorch * (1.0 - isOcean * 0.7));
+                  float airGlow = smoothstep(1.15, 0.0, normDist) * heat * exp(-age * 0.28);
+                  impMagmaGlow += vec3(1.0, 0.62, 0.25) * airGlow * 2.2;
+                  impCharMask = max(impCharMask, scorch);
+                } else {
+                  // Surface crater: molten central pit + raised rim + radial ejecta blanket
+                  float insidePit = smoothstep(1.04, 0.68, normDist);
+                  float rimBand = exp(-pow((normDist - 0.96) / 0.16, 2.0));
+                  float ejectaRay = smoothstep(2.55, 0.95, normDist) * smoothstep(-0.15, 0.55, fbm3(lDir * 38.0 + imp.xyz * 9.0));
+
+                  vec3 basaltCol = vec3(0.055, 0.048, 0.045);
+                  vec3 rimCol = mix(vec3(0.26, 0.22, 0.18), vec3(0.75, 0.86, 0.92), isOcean * exp(-age * 0.08));
+                  vec3 ejectaCol = mix(vec3(0.22, 0.18, 0.15), vec3(0.45, 0.58, 0.66), isOcean * 0.65);
+
+                  diffuseColor.rgb = mix(diffuseColor.rgb, ejectaCol, ejectaRay * 0.42);
+                  diffuseColor.rgb = mix(diffuseColor.rgb, rimCol, rimBand * 0.62);
+                  diffuseColor.rgb = mix(diffuseColor.rgb, basaltCol, insidePit * 0.92);
+
+                  // Incandescent molten pool + glowing crustal fracture veins
+                  float crackPattern = smoothstep(0.18, 0.62, abs(fbm3(lDir * 44.0 + vec3(uImpactTime * 0.04))));
+                  float coreHeat = smoothstep(0.95, 0.08, normDist) * heat;
+                  float veinHeat = smoothstep(1.38, 0.35, normDist) * (1.0 - crackPattern) * heat * 0.85;
+                  float rimHeat = rimBand * heat * 0.48;
+                  float totalH = clamp(coreHeat + veinHeat + rimHeat, 0.0, 2.6);
+
+                  vec3 lavaCol = mix(vec3(0.95, 0.14, 0.02), vec3(1.0, 0.62, 0.12), clamp(totalH * 0.72, 0.0, 1.0));
+                  lavaCol = mix(lavaCol, vec3(1.0, 0.97, 0.84), smoothstep(0.95, 2.1, totalH));
+                  impMagmaGlow += lavaCol * totalH * 2.1;
+                  impCharMask = max(impCharMask, clamp(insidePit + rimBand * 0.6 + ejectaRay * 0.35, 0.0, 1.0));
+                }
+              }
+
+              // Global planetary melt / magma ocean transition for planet-killer cumulative hits
+              if (uGlobalMelt > 0.001) {
+                float gm = clamp(uGlobalMelt, 0.0, 1.0);
+                float plateNoise = fbm3(lDir * 10.5 + vec3(uImpactTime * 0.015));
+                float fissure = 1.0 - smoothstep(0.0, 0.24 + gm * 0.25, abs(plateNoise));
+                diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.05, 0.035, 0.03), gm * 0.88);
+                vec3 globalLava = mix(vec3(0.95, 0.16, 0.02), vec3(1.0, 0.75, 0.22), clamp(gm * 1.15, 0.0, 1.0));
+                impMagmaGlow += globalLava * (fissure * (0.65 + gm * 2.0) + gm * gm * 1.15) * gm;
+                impCharMask = max(impCharMask, gm);
+              }
+            }
             `
           )
           .replace(
@@ -2589,14 +3427,15 @@
             float sunDot = dot(wNorm, normalize(uSunDir));
             float nightMask = smoothstep(0.08, -0.22, sunDot);
             vec3 cityCol = texture2D(uCityLights, vEarthUv).rgb;
-            totalEmissiveRadiance += cityCol * nightMask * 1.9;
+            totalEmissiveRadiance += cityCol * nightMask * 1.9 * (1.0 - clamp(impCharMask, 0.0, 1.0));
+            totalEmissiveRadiance += impMagmaGlow;
 
             // Subtle atmospheric Rayleigh horizon scatter & twilight terminator tint
             vec3 viewDirW = normalize(cameraPosition - vWorldPosEarth);
             float fresnel = pow(1.0 - max(dot(wNorm, viewDirW), 0.0), 3.6);
             float dayGlow = smoothstep(-0.25, 0.45, sunDot);
             float twilightBand = exp(-pow((sunDot + 0.02) / 0.14, 2.0));
-            vec3 atmoRim = mix(vec3(0.18, 0.56, 1.0), vec3(0.95, 0.42, 0.16), twilightBand * 0.45);
+            vec3 atmoRim = mix(vec3(0.18, 0.56, 1.0), vec3(0.95, 0.42, 0.16), clamp(twilightBand * 0.45 + uGlobalMelt * 0.85, 0.0, 1.0));
             totalEmissiveRadiance += atmoRim * fresnel * (0.08 + 0.52 * dayGlow);
 
             // Hover / Selected highlight
@@ -4972,8 +5811,17 @@
         inner_core: makeHighlightUniforms('#fef9c3')
       };
 
+      // Shared Impact Crater & Crustal Melt Uniforms (for Hidden Impact Mode)
+      const impactUniforms = {
+        uImpactCount: { value: 0 },
+        uImpacts: { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 1, 0, 0)) },
+        uImpactMeta: { value: Array.from({ length: 24 }, () => new THREE.Vector4(0, 0, 0, 0)) },
+        uGlobalMelt: { value: 0.0 },
+        uImpactTime: uTime
+      };
+
       // Shared Materials
-      const earthSurfaceMat = createEarthSurfaceMaterial(textures, uSunDir, layerUniforms.crust, uCloudOffset, uCloudOpacity);
+      const earthSurfaceMat = createEarthSurfaceMaterial(textures, uSunDir, layerUniforms.crust, uCloudOffset, uCloudOpacity, impactUniforms);
       const crustCutMat     = createGeologicalSectionMaterial(0, textures, uSunDir, uTime, layerUniforms.crust);
       const upperMantleMat  = createGeologicalSectionMaterial(1, textures, uSunDir, uTime, layerUniforms.upper_mantle);
       const lowerMantleMat  = createGeologicalSectionMaterial(2, textures, uSunDir, uTime, layerUniforms.lower_mantle);
@@ -5871,8 +6719,1842 @@
         document.body.classList.toggle('sheet-expanded');
       });
 
+      // =========================================================================
+      // HIDDEN MODE: PROJECT IMPACTOR — ULTRA-ACCURATE ASTEROID PHYSICS SIMULATOR
+      // Real SI RK4 + J2 + Lunar Gravity · Hills-Goda Atmosphere & Airburst ·
+      // Roche Tidal Disruption · Collins-Melosh-Marcus (2005) · Ward-Asphaug Tsunami
+      // =========================================================================
+      const impactSim = (() => {
+        // Real Physical Constants (SI)
+        const G_CONST = 6.67430e-11;
+        const M_EARTH = 5.9722e24;
+        const MU_EARTH = 3.986004418e14;
+        const MU_MOON = 4.9048695e12;
+        const R_EARTH_M = 6371000.0;
+        const J2_EARTH = 1.08262668e-3;
+        const G0_SURF = 9.80665;
+        const OMEGA_EARTH = 7.2921159e-5; // rad/s
+        const C_LIGHT = 299792458.0;
+        const J_PER_MT = 4.184e15;
+        const RHO_EARTH = 5514.0;
+        const ATMO_TOP_M = 140000.0;
+        const ATMO_H_M = 8000.0;
+        const RHO_ATMO_0 = 1.225;
+        const SCENE_PER_M = R_CRUST_OUT / R_EARTH_M;
+        const M_PER_SCENE = R_EARTH_M / R_CRUST_OUT;
+        const SIM_BASE_SECONDS_PER_SEC = 180.0; // 1x = 3 real min/s (dramatic & readable orbital flight)
+
+        const COMPOSITIONS = {
+          ice:      { name: 'Ice / Comet', density: 900,   yieldPa: 1.0e5,  ablationQ: 2.5e6, color: 0xaad8ff, emissive: 0x163858, rough: 0.55, metal: 0.05 },
+          rubble:   { name: 'Rubble Pile', density: 1500,  yieldPa: 4.5e5,  ablationQ: 5.5e6, color: 0x7c746a, emissive: 0x181310, rough: 0.96, metal: 0.04 },
+          carbon:   { name: 'C-Type',      density: 2200,  yieldPa: 2.0e6,  ablationQ: 7.0e6, color: 0x4b4642, emissive: 0x120f0d, rough: 0.94, metal: 0.08 },
+          stony:    { name: 'S-Type Rock', density: 3300,  yieldPa: 1.2e7,  ablationQ: 8.2e6, color: 0x8b7e72, emissive: 0x1c1713, rough: 0.88, metal: 0.14 },
+          iron:     { name: 'M-Type Iron', density: 7870,  yieldPa: 1.2e8,  ablationQ: 9.0e6, color: 0x8f9aa6, emissive: 0x161b22, rough: 0.36, metal: 0.84 },
+          tungsten: { name: 'Tungsten',    density: 19300, yieldPa: 7.5e8,  ablationQ: 1.4e7, color: 0xb6bec8, emissive: 0x1c2026, rough: 0.24, metal: 0.94 },
+          custom:   { name: 'Custom',      density: 3300,  yieldPa: 1.2e7,  ablationQ: 8.0e6, color: 0x9b8c7c, emissive: 0x1e1812, rough: 0.78, metal: 0.25 }
+        };
+
+        const PRESETS = {
+          chelyabinsk:  { name: 'Chelyabinsk (2013)',    diamM: 20,      velKmS: 19.0,  comp: 'stony',    dens: 3300,  yieldPa: 4.5e6, angle: 18, distRe: 2.6 },
+          tunguska:     { name: 'Tunguska (1908)',       diamM: 65,      velKmS: 27.0,  comp: 'carbon',   dens: 1900,  yieldPa: 1.2e6, angle: 35, distRe: 3.0 },
+          barringer:    { name: 'Meteor Crater',         diamM: 50,      velKmS: 12.8,  comp: 'iron',     dens: 7870,  yieldPa: 1.4e8, angle: 80, distRe: 2.8 },
+          apophis:      { name: 'Apophis (99942)',       diamM: 370,     velKmS: 12.6,  comp: 'stony',    dens: 3200,  yieldPa: 1.5e7, angle: 45, distRe: 3.4 },
+          chicxulub:    { name: 'Chicxulub (66 Ma)',     diamM: 11000,   velKmS: 20.0,  comp: 'carbon',   dens: 2200,  yieldPa: 2.0e6, angle: 60, distRe: 3.6 },
+          vesta:        { name: 'Vesta Planet-Killer',   diamM: 525000,  velKmS: 22.0,  comp: 'stony',    dens: 3456,  yieldPa: 2.5e7, angle: 55, distRe: 4.6 },
+          theia:        { name: 'Theia Protoplanet',     diamM: 6100000, velKmS: 10.2,  comp: 'stony',    dens: 3930,  yieldPa: 4.0e7, angle: 45, distRe: 6.2 },
+          tungsten:     { name: 'Rods from God',         diamM: 6,       velKmS: 11.2,  comp: 'tungsten', dens: 19300, yieldPa: 7.5e8, angle: 85, distRe: 2.2 },
+          relativistic: { name: 'Relativistic 0.17c',    diamM: 10,      velKmS: 50000, comp: 'iron',     dens: 7870,  yieldPa: 2.0e8, angle: 65, distRe: 5.5 },
+          roche:        { name: 'Roche Tidal Comet',     diamM: 18000,   velKmS: 9.0,   comp: 'ice',      dens: 900,   yieldPa: 5.0e4, angle: 12, distRe: 3.8 }
+        };
+
+        // Simulator State
+        const cfg = {
+          presetName: 'Chicxulub (66 Ma)',
+          diamM: 11000,
+          velKmS: 20.0,
+          comp: 'carbon',
+          dens: 2200,
+          yieldPa: 2.0e6,
+          angleDeg: 60,
+          distRe: 3.6,
+          swarmCount: 8,
+          launchMode: 'aim', // 'aim' | 'slingshot' | 'barrage'
+          timeScale: 1.0,
+          useGravity: true,
+          useAtmo: true,
+          useRoche: true,
+          useMoon: true,
+          showPreview: true,
+          sfxEnabled: true
+        };
+
+        const vitals = {
+          totalMt: 0,
+          totalImpacts: 0,
+          biosphere: 100.0,
+          tempAnomalyC: 0.0,
+          globalMelt: 0.0,
+          earthDeltaV: 0.0
+        };
+
+        let isActive = false;
+        let nextAsteroidId = 1;
+        let lastAimHitWorld = null;
+        let lastAimLocalDir = null;
+        let lastAimTime = 0;
+        let shakeIntensity = 0;
+        const shakeOffset = new THREE.Vector3();
+
+        // 3D Scene Containers
+        const impactWorldGroup = new THREE.Group();
+        heroStageGroup.add(impactWorldGroup);
+        const impactSurfaceGroup = new THREE.Group();
+        earthSpinGroup.add(impactSurfaceGroup);
+
+        // Active Simulation Entities
+        const asteroids = [];
+        const shockwaves = [];
+        const fireballs = [];
+        const craterRecords = []; // Mirrors impactUniforms (max 24)
+        const MAX_EJECTA = 1600;
+        const ejectaPos = new Float32Array(MAX_EJECTA * 3);
+        const ejectaCol = new Float32Array(MAX_EJECTA * 3);
+        const ejectaPool = [];
+        for (let i = 0; i < MAX_EJECTA; i++) {
+          ejectaPool.push({ alive: false, rx: 0, ry: 0, rz: 0, vx: 0, vy: 0, vz: 0, age: 0, maxAge: 1, r: 1, g: 0.5, b: 0.1 });
+        }
+        const ejectaGeo = new THREE.BufferGeometry();
+        ejectaGeo.setAttribute('position', new THREE.BufferAttribute(ejectaPos, 3));
+        ejectaGeo.setAttribute('color', new THREE.BufferAttribute(ejectaCol, 3));
+        const ejectaMat = new THREE.PointsMaterial({
+          size: 0.055,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.92,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const ejectaPoints = new THREE.Points(ejectaGeo, ejectaMat);
+        ejectaPoints.frustumCulled = false;
+        impactWorldGroup.add(ejectaPoints);
+
+        // Pre-Launch Predicted RK4 Trajectory Line & Target Reticle
+        const PREVIEW_PTS = 96;
+        const previewPositions = new Float32Array(PREVIEW_PTS * 3);
+        const previewGeo = new THREE.BufferGeometry();
+        previewGeo.setAttribute('position', new THREE.BufferAttribute(previewPositions, 3));
+        const previewMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.78 });
+        const previewLine = new THREE.Line(previewGeo, previewMat);
+        previewLine.visible = false;
+        previewLine.frustumCulled = false;
+        impactWorldGroup.add(previewLine);
+
+        const reticleGroup = new THREE.Group();
+        const reticleRingMat = new THREE.MeshBasicMaterial({ color: 0xff6b35, side: THREE.DoubleSide, transparent: true, opacity: 0.85, depthWrite: false });
+        const reticleInner = new THREE.Mesh(new THREE.RingGeometry(0.032, 0.044, 36), reticleRingMat);
+        const reticleOuter = new THREE.Mesh(new THREE.RingGeometry(0.068, 0.076, 48), new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.65, depthWrite: false }));
+        reticleGroup.add(reticleInner, reticleOuter);
+        reticleGroup.visible = false;
+        impactWorldGroup.add(reticleGroup);
+
+        // DOM Elements
+        const elFlash = document.getElementById('impact-flash');
+        const elToast = document.getElementById('impact-unlock-toast');
+        const elActiveCount = document.getElementById('imp-active-count');
+        const elHintBar = document.getElementById('impact-hint-bar');
+        const elBioPct = document.getElementById('imp-bio-pct');
+        const elBioFill = document.getElementById('imp-bio-fill');
+        const elEarthBadge = document.getElementById('imp-earth-status-badge');
+        const elEarthDt = document.getElementById('imp-earth-dt');
+        const elEarthMelt = document.getElementById('imp-earth-melt');
+        const elEarthEnergy = document.getElementById('imp-earth-energy');
+        const elEarthHits = document.getElementById('imp-earth-hits');
+        const elPredCoord = document.getElementById('imp-pred-coord');
+        const elPredTerrain = document.getElementById('imp-pred-terrain');
+        const elPredEnergy = document.getElementById('imp-pred-energy');
+        const elPredCrater = document.getElementById('imp-pred-crater');
+        const elLastType = document.getElementById('imp-last-type');
+        const elLastReport = document.getElementById('imp-last-report');
+        const elLogList = document.getElementById('imp-log-list');
+        const elLogCount = document.getElementById('imp-log-count');
+        const elMassPreview = document.getElementById('imp-mass-preview');
+
+        const slDiam = document.getElementById('imp-sl-diam');
+        const slVel = document.getElementById('imp-sl-vel');
+        const selComp = document.getElementById('imp-sel-comp');
+        const slDens = document.getElementById('imp-sl-dens');
+        const slYield = document.getElementById('imp-sl-yield');
+        const slAngle = document.getElementById('imp-sl-angle');
+        const slDist = document.getElementById('imp-sl-dist');
+        const slSwarm = document.getElementById('imp-sl-swarm');
+
+        const valDiam = document.getElementById('imp-val-diam');
+        const valVel = document.getElementById('imp-val-vel');
+        const valDens = document.getElementById('imp-val-dens');
+        const valYield = document.getElementById('imp-val-yield');
+        const valAngle = document.getElementById('imp-val-angle');
+        const valDist = document.getElementById('imp-val-dist');
+        const valSwarm = document.getElementById('imp-val-swarm');
+
+        const chkGrav = document.getElementById('imp-chk-grav');
+        const chkAtmo = document.getElementById('imp-chk-atmo');
+        const chkRoche = document.getElementById('imp-chk-roche');
+        const chkMoon = document.getElementById('imp-chk-moon');
+        const chkPrev = document.getElementById('imp-chk-prev');
+        const chkSfx = document.getElementById('imp-chk-sfx');
+
+        const impBtnSpin = document.getElementById('imp-btn-spin');
+        const impBtnClouds = document.getElementById('imp-btn-clouds');
+
+        // Procedural Web Audio Synthesizer (100% Zero External Files)
+        let audioCtx = null;
+        function ensureAudio() {
+          if (!cfg.sfxEnabled) return null;
+          try {
+            if (!audioCtx) {
+              const Ctx = window.AudioContext || window.webkitAudioContext;
+              if (!Ctx) return null;
+              audioCtx = new Ctx();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+          } catch (_) {
+            return null;
+          }
+        }
+
+        function playUnlockChime() {
+          const ctx = ensureAudio();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [440, 659.25, 880].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + i * 0.065);
+            gain.gain.setValueAtTime(0.001, now + i * 0.065);
+            gain.gain.exponentialRampToValueAtTime(0.08, now + i * 0.065 + 0.015);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.065 + 0.24);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now + i * 0.065);
+            osc.stop(now + i * 0.065 + 0.26);
+          });
+        }
+
+        function playImpactSfx(energyMt, isAirburst = false) {
+          const ctx = ensureAudio();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const logE = Math.max(0, Math.log10(Math.max(1e-3, energyMt)) + 3); // 0..14+
+          const mag = clamp01(logE / 12.0);
+          const dur = isAirburst ? (0.45 + mag * 0.65) : (0.65 + mag * 1.65);
+
+          // Sub-bass seismic boom oscillator
+          const osc = ctx.createOscillator();
+          const oscGain = ctx.createGain();
+          osc.type = isAirburst ? 'sawtooth' : 'sine';
+          const startFreq = isAirburst ? (160 - mag * 50) : (105 - mag * 45);
+          osc.frequency.setValueAtTime(Math.max(38, startFreq), now);
+          osc.frequency.exponentialRampToValueAtTime(isAirburst ? 34 : 20, now + dur);
+          oscGain.gain.setValueAtTime(0.001, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.12 + mag * 0.22, now + 0.02);
+          oscGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+          osc.connect(oscGain).connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + dur + 0.04);
+
+          // Filtered noise shockwave blast
+          const bufLen = Math.floor(ctx.sampleRate * dur);
+          const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+          const data = buf.getChannelData(0);
+          for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufLen * 0.35));
+          const noise = ctx.createBufferSource();
+          noise.buffer = buf;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(isAirburst ? 1800 : (950 + mag * 700), now);
+          filter.frequency.exponentialRampToValueAtTime(110, now + dur);
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(0.09 + mag * 0.16, now);
+          nGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+          noise.connect(filter).connect(nGain).connect(ctx.destination);
+          noise.start(now);
+        }
+
+        // Formatting Utilities
+        function fmtLength(m) {
+          if (m >= 1e6) return `${(m / 1e3).toLocaleString('en-US', { maximumFractionDigits: 0 })} km`;
+          if (m >= 10000) return `${(m / 1e3).toFixed(1)} km`;
+          if (m >= 1000) return `${(m / 1e3).toFixed(2)} km`;
+          if (m >= 10) return `${m.toFixed(0)} m`;
+          return `${m.toFixed(1)} m`;
+        }
+
+        function fmtVelocity(kmS) {
+          const beta = (kmS * 1000) / C_LIGHT;
+          if (beta >= 0.01) return `${kmS.toLocaleString('en-US', { maximumFractionDigits: 0 })} km/s (${(beta * 100).toFixed(1)}% c)`;
+          if (kmS >= 100) return `${kmS.toFixed(0)} km/s`;
+          return `${kmS.toFixed(1)} km/s`;
+        }
+
+        function fmtEnergyMt(mt) {
+          if (mt >= 1e12) return `${(mt / 1e12).toFixed(2)} Tt`;
+          if (mt >= 1e9) return `${(mt / 1e9).toFixed(2)}B Mt`;
+          if (mt >= 1e6) return `${(mt / 1e6).toFixed(2)}M Mt`;
+          if (mt >= 1e3) return `${(mt / 1e3).toFixed(1)}k Mt`;
+          if (mt >= 1) return `${mt.toFixed(2)} Mt`;
+          if (mt >= 1e-3) return `${(mt * 1000).toFixed(1)} kt`;
+          return `${(mt * 1e6).toFixed(1)} tons`;
+        }
+
+        function fmtMass(kg) {
+          if (kg <= 0) return '0 kg';
+          const exp = Math.floor(Math.log10(kg));
+          if (exp >= 6) return `${(kg / Math.pow(10, exp)).toFixed(2)}×10^${exp} kg`;
+          return `${kg.toLocaleString('en-US', { maximumFractionDigits: 0 })} kg`;
+        }
+
+        function fmtStrength(pa) {
+          if (pa >= 1e9) return `${(pa / 1e9).toFixed(2)} GPa`;
+          if (pa >= 1e6) return `${(pa / 1e6).toFixed(1)} MPa`;
+          return `${(pa / 1e3).toFixed(0)} kPa`;
+        }
+
+        // Logarithmic Slider Conversions
+        const logToDiam = (s) => Math.pow(10, (s / 1000) * Math.log10(6500000));
+        const diamToLog = (m) => Math.round((Math.log10(Math.max(1, Math.min(6500000, m))) / Math.log10(6500000)) * 1000);
+        const logToVel = (s) => Math.pow(10, (s / 1000) * 5.0);
+        const velToLog = (k) => Math.round((Math.log10(Math.max(1, Math.min(100000, k))) / 5.0) * 1000);
+        const logToDens = (s) => 200 * Math.pow(250, s / 1000);
+        const densToLog = (d) => Math.round((Math.log(Math.max(200, Math.min(50000, d)) / 200) / Math.log(250)) * 1000);
+        const logToYield = (s) => 5e4 * Math.pow(2e5, s / 1000);
+        const yieldToLog = (y) => Math.round((Math.log(Math.max(5e4, Math.min(1e10, y)) / 5e4) / Math.log(2e5)) * 1000);
+
+        // Exact Terrain / Ocean Depth / CRUST1.0 Moho Lookup from Local Unit Direction
+        function sampleEarthTerrain(localDir) {
+          const sy = Math.max(-1, Math.min(1, localDir.y));
+          const theta = Math.acos(sy);
+          const vCanvas = theta / Math.PI;
+          const lat = 90 - vCanvas * 180;
+          let phi = Math.atan2(localDir.z, -localDir.x);
+          if (phi < 0) phi += Math.PI * 2;
+          const u = phi / (Math.PI * 2);
+          const lon = u * 360 - 180;
+
+          const ix = Math.floor(u * textures.texW) % textures.texW;
+          const iy = Math.min(textures.texH - 1, Math.max(0, Math.floor(vCanvas * textures.texH)));
+          const hVal = textures.heightField ? textures.heightField[iy * textures.texW + ix] : 0;
+          const isOcean = hVal < 0;
+
+          let elevKm = isOcean ? -3.8 : 0.6;
+          let mohoKm = isOcean ? 11.5 : 38.0;
+          if (textures.sciGrids) {
+            elevKm = sampleAlignedGrid(textures.sciGrids.elevKm, textures.sgW, textures.sgH, u, vCanvas);
+            mohoKm = Math.max(6.0, sampleAlignedGrid(textures.sciGrids.mohoKm, textures.sgW, textures.sgH, u, vCanvas));
+          }
+          const waterDepthM = isOcean ? Math.max(200, Math.abs(Math.min(-0.2, elevKm)) * 1000) : 0;
+          const targetRho = isOcean ? 2950 : 2750;
+
+          return {
+            lat, lon, isOcean, elevKm, mohoKm, waterDepthM, targetRho,
+            coordStr: `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'}, ${Math.abs(lon).toFixed(1)}°${lon >= 0 ? 'E' : 'W'}`,
+            terrainStr: isOcean
+              ? `มหาสมุทรลึก ${(waterDepthM / 1000).toFixed(1)} km · Moho ${mohoKm.toFixed(0)} km`
+              : `ทวีป (${elevKm >= 0 ? '+' : ''}${elevKm.toFixed(1)} km) · Moho ${mohoKm.toFixed(0)} km`
+          };
+        }
+
+        // Real Relativistic Kinetic Energy (Exact for both Classical & Relativistic Speeds!)
+        function computeKineticEnergyJ(massKg, speedMS) {
+          const beta = Math.min(speedMS / C_LIGHT, 0.99999);
+          if (beta > 0.005) {
+            const gamma = 1.0 / Math.sqrt(1.0 - beta * beta);
+            return (gamma - 1.0) * massKg * C_LIGHT * C_LIGHT;
+          }
+          return 0.5 * massKg * speedMS * speedMS;
+        }
+
+        // Collins, Melosh & Marcus (2005) + Ward & Asphaug (2000) Impact Physics Calculator
+        function evaluateImpactPhysics({ massKg, diamM, dens, speedMS, angleDeg, terrain, isAirburst, airburstAltM }) {
+          const energyJ = computeKineticEnergyJ(massKg, speedMS);
+          const energyMt = energyJ / J_PER_MT;
+          const hiroshimaEq = energyMt / 0.015;
+          const chicxulubEq = energyMt / 1e8;
+
+          // Seismic Moment Magnitude Mw (Collins et al. 2005 eq. 45)
+          const seismicMw = Math.max(0, 0.67 * Math.log10(Math.max(1e6, energyJ)) - 5.87);
+          // Fireball radius (m)
+          const fireballM = 0.002 * Math.pow(Math.max(1, energyJ), 1 / 3);
+          // Airblast 5-psi structural collapse radius (scaled from 1 Mt ≈ 6.5 km)
+          const blast5PsiM = 6500 * Math.pow(Math.max(1e-6, energyMt), 1 / 3);
+
+          let transientDiamM = 0;
+          let finalDiamM = 0;
+          let craterDepthM = 0;
+          let mantleBreach = false;
+          let tsunami100kmM = 0;
+          let tsunami1000kmM = 0;
+
+          if (!isAirburst) {
+            const sinTheta = Math.max(0.087, Math.sin(THREE.MathUtils.degToRad(angleDeg)));
+            // Effective speed for crater scaling (accounts for relativistic energy boost if beta > 0.01)
+            const vEff = Math.sqrt((2.0 * energyJ) / Math.max(1, massKg));
+            transientDiamM = 1.161
+              * Math.pow(dens / terrain.targetRho, 1 / 3)
+              * Math.pow(Math.max(0.1, diamM), 0.78)
+              * Math.pow(Math.max(100, vEff), 0.44)
+              * Math.pow(G0_SURF, -0.22)
+              * Math.pow(sinTheta, 1 / 3);
+
+            // Water layer attenuation for smaller ocean impacts
+            if (terrain.isOcean && terrain.waterDepthM > diamM * 1.5) {
+              const atten = clamp01(1.0 - (terrain.waterDepthM / (diamM * 18.0)) * 0.45);
+              transientDiamM *= Math.max(0.35, atten);
+            }
+
+            // Simple-to-Complex Crater Collapse Transition on Earth (Dc = 3.2 km)
+            const Dc = 3200.0;
+            if (transientDiamM < 2560.0) {
+              finalDiamM = 1.25 * transientDiamM;
+              craterDepthM = 0.20 * finalDiamM;
+            } else {
+              finalDiamM = 1.17 * Math.pow(transientDiamM, 1.13) / Math.pow(Dc, 0.13);
+              craterDepthM = 0.294 * Math.pow(finalDiamM / 1000, 0.301) * 1000;
+            }
+            // Cap physically at planetary diameter
+            finalDiamM = Math.min(finalDiamM, R_EARTH_M * 1.95);
+            const transientDepthM = transientDiamM / (2.0 * Math.sqrt(2.0));
+            mantleBreach = (transientDepthM / 1000.0) > terrain.mohoKm;
+
+            // Ocean Impact Tsunami (Ward & Asphaug 2000)
+            if (terrain.isOcean && terrain.waterDepthM > 50) {
+              const cavityR = Math.max(50, transientDiamM * 0.5);
+              const initAmp = Math.min(0.14 * transientDiamM, terrain.waterDepthM * 1.2);
+              tsunami100kmM = initAmp * Math.pow(cavityR / Math.max(cavityR, 100000), 0.75);
+              tsunami1000kmM = initAmp * Math.pow(cavityR / Math.max(cavityR, 1000000), 0.75);
+            }
+          }
+
+          // Earth velocity impulse Δv = p / M_earth
+          const gamma = 1.0 / Math.sqrt(1.0 - Math.min(speedMS / C_LIGHT, 0.9999) ** 2);
+          const earthDv = (gamma * massKg * speedMS) / M_EARTH;
+
+          // Severity Classification
+          let severity = 'LOCAL';
+          let sevClass = 'ok';
+          if (energyMt >= 5e11) { severity = 'PLANETARY DISRUPTION'; sevClass = 'crit'; }
+          else if (energyMt >= 5e9) { severity = 'GLOBAL MAGMA OCEAN'; sevClass = 'crit'; }
+          else if (energyMt >= 5e7) { severity = 'MASS EXTINCTION (CHICXULUB)'; sevClass = 'crit'; }
+          else if (energyMt >= 5e4) { severity = 'CONTINENTAL DEVASTATION'; sevClass = 'warn'; }
+          else if (energyMt >= 50) { severity = 'REGIONAL CATASTROPHE'; sevClass = 'warn'; }
+          else if (isAirburst) { severity = 'ATMOSPHERIC AIRBURST'; sevClass = 'air'; }
+
+          return {
+            energyJ, energyMt, hiroshimaEq, chicxulubEq, seismicMw, fireballM, blast5PsiM,
+            transientDiamM, finalDiamM, craterDepthM, mantleBreach,
+            tsunami100kmM, tsunami1000kmM, earthDv, severity, sevClass,
+            isAirburst, airburstAltM: airburstAltM || 0
+          };
+        }
+
+        // World-space Earth Pole Axis & Moon Position Cache
+        const poleAxisW = new THREE.Vector3(0, 1, 0);
+        const moonPosM = new THREE.Vector3();
+        function syncGravityFrame() {
+          earthTiltGroup.updateMatrixWorld();
+          poleAxisW.set(0, 1, 0).applyQuaternion(earthTiltGroup.quaternion).normalize();
+          earthMoonMesh.getWorldPosition(moonPosM).multiplyScalar(M_PER_SCENE);
+        }
+
+        // Exact 3D Acceleration Function (Newtonian + J2 Oblateness + Lunar Perturbation + Co-Rotating Atmosphere Drag)
+        function computeAccel(rx, ry, rz, vx, vy, vz, massKg, rEffM, includeDrag) {
+          let ax = 0, ay = 0, az = 0;
+          const r2 = rx * rx + ry * ry + rz * rz;
+          const r = Math.sqrt(r2);
+
+          if (cfg.useGravity && r > 1e5) {
+            const invR3 = -MU_EARTH / (r2 * r);
+            ax += invR3 * rx;
+            ay += invR3 * ry;
+            az += invR3 * rz;
+
+            // J2 Earth Oblateness Perturbation (aligned to 23.44° tilted spin axis)
+            const zDot = rx * poleAxisW.x + ry * poleAxisW.y + rz * poleAxisW.z;
+            const z2r2 = (zDot * zDot) / r2;
+            const kJ2 = 1.5 * J2_EARTH * MU_EARTH * (R_EARTH_M * R_EARTH_M) / (r2 * r2 * r);
+            const cR = 5.0 * z2r2 - 1.0;
+            const cP = -2.0 * zDot;
+            ax += kJ2 * (cR * rx + cP * poleAxisW.x);
+            ay += kJ2 * (cR * ry + cP * poleAxisW.y);
+            az += kJ2 * (cR * rz + cP * poleAxisW.z);
+
+            // Optional Lunar Gravity Perturbation
+            if (cfg.useMoon) {
+              const dx = moonPosM.x - rx;
+              const dy = moonPosM.y - ry;
+              const dz = moonPosM.z - rz;
+              const d2 = dx * dx + dy * dy + dz * dz;
+              if (d2 > 2e12) {
+                const invD3 = MU_MOON / (d2 * Math.sqrt(d2));
+                ax += invD3 * dx;
+                ay += invD3 * dy;
+                az += invD3 * dz;
+              }
+            }
+          }
+
+          // US Standard Atmosphere Drag (co-rotating with Earth's tilted spin axis)
+          if (includeDrag && cfg.useAtmo && r > R_EARTH_M && r < R_EARTH_M + ATMO_TOP_M && massKg > 1) {
+            const alt = r - R_EARTH_M;
+            const rhoAtm = RHO_ATMO_0 * Math.exp(-alt / ATMO_H_M);
+            // Atmospheric co-rotation velocity: omega x r
+            const wx = poleAxisW.x * OMEGA_EARTH;
+            const wy = poleAxisW.y * OMEGA_EARTH;
+            const wz = poleAxisW.z * OMEGA_EARTH;
+            const vAtmX = wy * rz - wz * ry;
+            const vAtmY = wz * rx - wx * rz;
+            const vAtmZ = wx * ry - wy * rx;
+            const vrx = vx - vAtmX;
+            const vry = vy - vAtmY;
+            const vrz = vz - vAtmZ;
+            const vr = Math.sqrt(vrx * vrx + vry * vry + vrz * vrz);
+            if (vr > 1.0) {
+              const area = Math.PI * rEffM * rEffM;
+              const dragFactor = -(0.5 * 1.15 * rhoAtm * area * vr) / massKg;
+              // Clamp extreme deceleration for numerical stability
+              const maxDecel = vr * 40.0;
+              const dMag = Math.min(Math.abs(dragFactor) * vr, maxDecel) / vr;
+              ax -= dMag * vrx;
+              ay -= dMag * vry;
+              az -= dMag * vrz;
+            }
+          }
+
+          return [ax, ay, az];
+        }
+
+        // Single 4th-Order Runge-Kutta (RK4) Integration Step
+        function rk4Step(st, dt, includeDrag) {
+          const { rx, ry, rz, vx, vy, vz, massKg, rEffM } = st;
+          const a1 = computeAccel(rx, ry, rz, vx, vy, vz, massKg, rEffM, includeDrag);
+          const k1rx = vx, k1ry = vy, k1rz = vz;
+          const k1vx = a1[0], k1vy = a1[1], k1vz = a1[2];
+
+          const dt2 = dt * 0.5;
+          const rx2 = rx + k1rx * dt2, ry2 = ry + k1ry * dt2, rz2 = rz + k1rz * dt2;
+          const vx2 = vx + k1vx * dt2, vy2 = vy + k1vy * dt2, vz2 = vz + k1vz * dt2;
+          const a2 = computeAccel(rx2, ry2, rz2, vx2, vy2, vz2, massKg, rEffM, includeDrag);
+          const k2rx = vx2, k2ry = vy2, k2rz = vz2;
+          const k2vx = a2[0], k2vy = a2[1], k2vz = a2[2];
+
+          const rx3 = rx + k2rx * dt2, ry3 = ry + k2ry * dt2, rz3 = rz + k2rz * dt2;
+          const vx3 = vx + k2vx * dt2, vy3 = vy + k2vy * dt2, vz3 = vz + k2vz * dt2;
+          const a3 = computeAccel(rx3, ry3, rz3, vx3, vy3, vz3, massKg, rEffM, includeDrag);
+          const k3rx = vx3, k3ry = vy3, k3rz = vz3;
+          const k3vx = a3[0], k3vy = a3[1], k3vz = a3[2];
+
+          const rx4 = rx + k3rx * dt, ry4 = ry + k3ry * dt, rz4 = rz + k3rz * dt;
+          const vx4 = vx + k3vx * dt, vy4 = vy + k3vy * dt, vz4 = vz + k3vz * dt;
+          const a4 = computeAccel(rx4, ry4, rz4, vx4, vy4, vz4, massKg, rEffM, includeDrag);
+          const k4rx = vx4, k4ry = vy4, k4rz = vz4;
+          const k4vx = a4[0], k4vy = a4[1], k4vz = a4[2];
+
+          const dt6 = dt / 6.0;
+          st.rx += (k1rx + 2 * k2rx + 2 * k3rx + k4rx) * dt6;
+          st.ry += (k1ry + 2 * k2ry + 2 * k3ry + k4ry) * dt6;
+          st.rz += (k1rz + 2 * k2rz + 2 * k3rz + k4rz) * dt6;
+          st.vx += (k1vx + 2 * k2vx + 2 * k3vx + k4vx) * dt6;
+          st.vy += (k1vy + 2 * k2vy + 2 * k3vy + k4vy) * dt6;
+          st.vz += (k1vz + 2 * k2vz + 2 * k3vz + k4vz) * dt6;
+        }
+
+        // Backward-RK4 Exact Ballistic Targeting Solver
+        // Computes exact launch (rStart, vStart) at R_launch so forward gravity curves right into worldHit at entry angle theta!
+        function solveAimTrajectory(worldHitPoint, customAngleDeg = null, customDistRe = null, customVelKmS = null) {
+          syncGravityFrame();
+          const hitNormal = worldHitPoint.clone().normalize();
+          const angleDeg = customAngleDeg !== null ? customAngleDeg : cfg.angleDeg;
+          const distRe = customDistRe !== null ? customDistRe : cfg.distRe;
+          const v0 = (customVelKmS !== null ? customVelKmS : cfg.velKmS) * 1000.0;
+          const rLaunch = distRe * R_EARTH_M;
+
+          // Build a clean tangent direction oriented sideways relative to camera for awesome 3D curve readability
+          const camRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+          const camUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+          const tan = camRight.clone().addScaledVector(camUp, 0.35);
+          tan.addScaledVector(hitNormal, -tan.dot(hitNormal));
+          if (tan.lengthSq() < 1e-4) {
+            tan.set(0, 1, 0).cross(hitNormal);
+            if (tan.lengthSq() < 1e-4) tan.set(1, 0, 0);
+          }
+          tan.normalize();
+
+          const thetaRad = THREE.MathUtils.degToRad(angleDeg);
+          // Vis-viva arrival speed at Earth's surface given launch speed v0 at rLaunch
+          let vArr = v0;
+          if (cfg.useGravity) {
+            const gravGain = 2.0 * MU_EARTH * (1.0 / R_EARTH_M - 1.0 / Math.max(R_EARTH_M * 1.05, rLaunch));
+            vArr = Math.sqrt(Math.max(100, v0 * v0 + gravGain));
+          }
+
+          // Inward arrival velocity at surface
+          const vArrVec = hitNormal.clone().multiplyScalar(-Math.sin(thetaRad))
+            .addScaledVector(tan, Math.cos(thetaRad))
+            .multiplyScalar(vArr);
+
+          const st = {
+            rx: hitNormal.x * (R_EARTH_M + 2000),
+            ry: hitNormal.y * (R_EARTH_M + 2000),
+            rz: hitNormal.z * (R_EARTH_M + 2000),
+            vx: vArrVec.x,
+            vy: vArrVec.y,
+            vz: vArrVec.z,
+            massKg: 1e12,
+            rEffM: 1000
+          };
+
+          const pts = [[st.rx, st.ry, st.rz]];
+          let elapsed = 0;
+          for (let step = 0; step < 220; step++) {
+            const r = Math.hypot(st.rx, st.ry, st.rz);
+            if (r >= rLaunch) break;
+            const spd = Math.hypot(st.vx, st.vy, st.vz);
+            const rem = Math.max(2e5, rLaunch - r);
+            // Adaptive negative time step
+            const dtBack = -Math.min(rem / Math.max(800, spd) * 0.35 + 1.0, (r * 0.045) / Math.max(800, spd));
+            rk4Step(st, dtBack, false);
+            elapsed += -dtBack;
+            pts.push([st.rx, st.ry, st.rz]);
+          }
+          pts.reverse();
+          return {
+            startPosM: new THREE.Vector3(st.rx, st.ry, st.rz),
+            startVelMS: new THREE.Vector3(st.vx, st.vy, st.vz),
+            arrivalSpeedMS: vArr,
+            flightTimeSec: elapsed,
+            pointsM: pts
+          };
+        }
+
+        // Procedural 3D Rocky/Metallic/Icy Asteroid Mesh Factory
+        function createAsteroidMesh(diamM, compKey) {
+          const comp = COMPOSITIONS[compKey] || COMPOSITIONS.stony;
+          // Visual radius: readable for tiny meteors, true 1:1 geometric scale for large planetoids!
+          const trueSceneR = (diamM * 0.5) * SCENE_PER_M;
+          const visR = Math.max(
+            0.022 + Math.min(0.06, Math.log10(Math.max(1, diamM)) * 0.011),
+            trueSceneR
+          );
+
+          const detail = diamM > 50000 ? 3 : 2;
+          const geo = new THREE.IcosahedronGeometry(visR, detail);
+          const posAttr = geo.attributes.position;
+          const seed = Math.random() * 100.0;
+          // Slightly irregular rocky lump (more spherical for dwarf-planet-scale > 400 km!)
+          const irreg = diamM > 400000 ? 0.04 : (compKey === 'tungsten' ? 0.05 : 0.24);
+          const tmp = new THREE.Vector3();
+          for (let i = 0; i < posAttr.count; i++) {
+            tmp.fromBufferAttribute(posAttr, i);
+            const n = Math.sin(tmp.x * 5.2 / visR + seed) * Math.cos(tmp.y * 4.7 / visR - seed)
+                    + 0.5 * Math.sin((tmp.z * 8.1 - tmp.x * 6.3) / visR + seed * 1.7);
+            const scale = 1.0 + irreg * n * 0.48;
+            tmp.multiplyScalar(scale);
+            posAttr.setXYZ(i, tmp.x, tmp.y, tmp.z);
+          }
+          geo.computeVertexNormals();
+
+          const mat = new THREE.MeshStandardMaterial({
+            color: comp.color,
+            emissive: new THREE.Color(comp.emissive),
+            emissiveIntensity: 0.4,
+            roughness: comp.rough,
+            metalness: comp.metal
+          });
+          const mesh = new THREE.Mesh(geo, mat);
+
+          // Incandescent Atmospheric Plasma Envelope (invisible in deep space, blazes white-orange on entry!)
+          const plasmaGeo = new THREE.SphereGeometry(visR * 1.48, 16, 12);
+          const plasmaMat = new THREE.MeshBasicMaterial({
+            color: 0xff9438,
+            transparent: true,
+            opacity: 0.0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const plasmaMesh = new THREE.Mesh(plasmaGeo, plasmaMat);
+          mesh.add(plasmaMesh);
+
+          return { mesh, mat, plasmaMesh, plasmaMat, visR };
+        }
+
+        // Spawn Asteroid Projectile into RK4 Simulation
+        function spawnAsteroid({ posM, velMS, diamM, dens, yieldPa, comp, name, canSplit = true }) {
+          const compCfg = COMPOSITIONS[comp] || COMPOSITIONS.stony;
+          const r0 = diamM * 0.5;
+          const massKg = (4 / 3) * Math.PI * r0 * r0 * r0 * dens;
+          const { mesh, mat, plasmaMesh, plasmaMat, visR } = createAsteroidMesh(diamM, comp);
+          mesh.position.copy(posM).multiplyScalar(SCENE_PER_M);
+          impactWorldGroup.add(mesh);
+
+          // Dynamic Orbit & Plasma Trail Line
+          const TRAIL_MAX = 90;
+          const trailBuf = new Float32Array(TRAIL_MAX * 3);
+          for (let i = 0; i < TRAIL_MAX; i++) {
+            trailBuf[i * 3] = mesh.position.x;
+            trailBuf[i * 3 + 1] = mesh.position.y;
+            trailBuf[i * 3 + 2] = mesh.position.z;
+          }
+          const trailGeo = new THREE.BufferGeometry();
+          trailGeo.setAttribute('position', new THREE.BufferAttribute(trailBuf, 3));
+          const trailMat = new THREE.LineBasicMaterial({
+            color: comp === 'ice' ? 0x7dd3fc : 0xfbbf24,
+            transparent: true,
+            opacity: 0.72
+          });
+          const trailLine = new THREE.Line(trailGeo, trailMat);
+          trailLine.frustumCulled = false;
+          impactWorldGroup.add(trailLine);
+
+          asteroids.push({
+            id: nextAsteroidId++,
+            name: name || `${compCfg.name} (${fmtLength(diamM)})`,
+            rx: posM.x, ry: posM.y, rz: posM.z,
+            vx: velMS.x, vy: velMS.y, vz: velMS.z,
+            diamM, r0, rEffM: r0,
+            massKg, initMassKg: massKg,
+            dens, yieldPa, comp,
+            ablationQ: compCfg.ablationQ,
+            canSplit,
+            fragmenting: false,
+            plasmaHeat: 0,
+            minDistM: posM.length(),
+            ageSec: 0,
+            spinAxis: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(),
+            spinSpeed: 0.8 + Math.random() * 2.8,
+            mesh, mat, plasmaMesh, plasmaMat, visR,
+            trailLine, trailGeo, trailMat, trailBuf, trailCount: 1, trailAccum: 0
+          });
+          updateActiveCountBadge();
+        }
+
+        function disposeAsteroid(ast) {
+          impactWorldGroup.remove(ast.mesh);
+          impactWorldGroup.remove(ast.trailLine);
+          ast.mesh.geometry.dispose();
+          ast.mat.dispose();
+          ast.plasmaMesh.geometry.dispose();
+          ast.plasmaMat.dispose();
+          ast.trailGeo.dispose();
+          ast.trailMat.dispose();
+        }
+
+        // Register Persistent Surface Crater in Earth's GLSL Shader Uniforms
+        function addSurfaceCrater(localDir, angularRad, heatPower, isOcean, isAirburst) {
+          const rec = {
+            dir: localDir.clone().normalize(),
+            rad: Math.min(1.35, Math.max(0.012, angularRad)),
+            age: 0,
+            heat: heatPower,
+            isOcean: isOcean ? 1.0 : 0.0,
+            isAirburst: isAirburst ? 1.0 : 0.0
+          };
+          if (craterRecords.length >= 24) {
+            craterRecords.shift();
+          }
+          craterRecords.push(rec);
+          syncCraterUniforms();
+        }
+
+        function syncCraterUniforms() {
+          impactUniforms.uImpactCount.value = craterRecords.length;
+          for (let i = 0; i < craterRecords.length; i++) {
+            const c = craterRecords[i];
+            impactUniforms.uImpacts.value[i].set(c.dir.x, c.dir.y, c.dir.z, c.rad);
+            impactUniforms.uImpactMeta.value[i].set(c.age, c.heat, c.isOcean, c.isAirburst);
+          }
+          impactUniforms.uGlobalMelt.value = vitals.globalMelt;
+        }
+
+        // Spawn Spherical Geodesic Shockwave Ring Hugging Earth's Curvature!
+        function spawnSphericalShockwave(localDir, maxAngleRad, colorHex, speedRadPerSec, ringWidthRad, altScale = 1.008) {
+          const SEG = 64;
+          const geo = new THREE.BufferGeometry();
+          const positions = new Float32Array((SEG + 1) * 2 * 3);
+          const indices = [];
+          for (let i = 0; i < SEG; i++) {
+            const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+            indices.push(a, b, c, b, d, c);
+          }
+          geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geo.setIndex(indices);
+          const mat = new THREE.MeshBasicMaterial({
+            color: colorHex,
+            transparent: true,
+            opacity: 0.9,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const mesh = new THREE.Mesh(geo, mat);
+          impactSurfaceGroup.add(mesh);
+
+          // Orthonormal basis around localDir
+          const u = new THREE.Vector3(0, 1, 0).cross(localDir);
+          if (u.lengthSq() < 1e-4) u.set(1, 0, 0).cross(localDir);
+          u.normalize();
+          const v = localDir.clone().cross(u).normalize();
+
+          shockwaves.push({
+            mesh, geo, mat, positions, SEG,
+            dir: localDir.clone().normalize(), u, v,
+            angle: 0.008,
+            maxAngle: Math.min(Math.PI * 0.96, maxAngleRad),
+            speed: speedRadPerSec,
+            width: ringWidthRad,
+            radius: R_CRUST_OUT * altScale
+          });
+        }
+
+        function updateShockwaves(dt) {
+          for (let s = shockwaves.length - 1; s >= 0; s--) {
+            const sw = shockwaves[s];
+            sw.angle += sw.speed * dt;
+            const prog = sw.angle / sw.maxAngle;
+            if (prog >= 1.0) {
+              impactSurfaceGroup.remove(sw.mesh);
+              sw.geo.dispose();
+              sw.mat.dispose();
+              shockwaves.splice(s, 1);
+              continue;
+            }
+            sw.mat.opacity = Math.pow(1.0 - prog, 1.55) * 0.88;
+            const aOut = sw.angle;
+            const aIn = Math.max(0.002, sw.angle - sw.width * (0.4 + 0.6 * prog));
+            const cosO = Math.cos(aOut), sinO = Math.sin(aOut);
+            const cosI = Math.cos(aIn), sinI = Math.sin(aIn);
+            const { dir, u, v, positions, SEG, radius } = sw;
+
+            for (let i = 0; i <= SEG; i++) {
+              const t = (i / SEG) * Math.PI * 2;
+              const ct = Math.cos(t), st = Math.sin(t);
+              const tx = u.x * ct + v.x * st;
+              const ty = u.y * ct + v.y * st;
+              const tz = u.z * ct + v.z * st;
+
+              const idx = i * 6;
+              positions[idx]     = (dir.x * cosI + tx * sinI) * radius;
+              positions[idx + 1] = (dir.y * cosI + ty * sinI) * radius;
+              positions[idx + 2] = (dir.z * cosI + tz * sinI) * radius;
+              positions[idx + 3] = (dir.x * cosO + tx * sinO) * radius;
+              positions[idx + 4] = (dir.y * cosO + ty * sinO) * radius;
+              positions[idx + 5] = (dir.z * cosO + tz * sinO) * radius;
+            }
+            sw.geo.attributes.position.needsUpdate = true;
+          }
+        }
+
+        // Spawn Expanding Incandescent Fireball Dome
+        function spawnFireball(localDir, maxRadiusScene, colorHex, altOffset = 0.0, duration = 1.6) {
+          const geo = new THREE.SphereGeometry(1.0, 20, 14);
+          const mat = new THREE.MeshBasicMaterial({
+            color: colorHex,
+            transparent: true,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.position.copy(localDir).multiplyScalar(R_CRUST_OUT + altOffset);
+          mesh.scale.setScalar(0.01);
+          impactSurfaceGroup.add(mesh);
+          fireballs.push({ mesh, geo, mat, age: 0, duration, maxRadius: maxRadiusScene });
+        }
+
+        function updateFireballs(dt) {
+          for (let i = fireballs.length - 1; i >= 0; i--) {
+            const fb = fireballs[i];
+            fb.age += dt;
+            const p = fb.age / fb.duration;
+            if (p >= 1.0) {
+              impactSurfaceGroup.remove(fb.mesh);
+              fb.geo.dispose();
+              fb.mat.dispose();
+              fireballs.splice(i, 1);
+              continue;
+            }
+            const ease = 1.0 - Math.pow(1.0 - p, 3.0);
+            fb.mesh.scale.setScalar(0.01 + fb.maxRadius * ease);
+            fb.mat.opacity = Math.pow(1.0 - p, 1.8) * 0.95;
+          }
+        }
+
+        // Spawn 3D Ballistic Ejecta Plume (True Gravity-Arcing Molten Debris!)
+        function spawnEjectaPlume(worldPosM, impactSpeedMS, energyMt, isOcean, isAirburst) {
+          const logE = Math.max(0, Math.log10(Math.max(1e-2, energyMt)) + 2);
+          const count = Math.min(240, Math.floor(24 + logE * 18));
+          const norm = worldPosM.clone().normalize();
+          const u = new THREE.Vector3(0, 1, 0).cross(norm);
+          if (u.lengthSq() < 1e-4) u.set(1, 0, 0).cross(norm);
+          u.normalize();
+          const v = norm.clone().cross(u).normalize();
+
+          // Ejecta velocity scales realistically toward sub-orbital/escape velocities for massive hits
+          const baseV = isAirburst
+            ? Math.min(4500, impactSpeedMS * 0.28)
+            : Math.min(13500, 1400 + Math.pow(Math.max(0.1, energyMt), 0.14) * 900);
+
+          let spawned = 0;
+          for (let i = 0; i < MAX_EJECTA && spawned < count; i++) {
+            const ep = ejectaPool[i];
+            if (ep.alive) continue;
+            const az = Math.random() * Math.PI * 2;
+            const elev = isAirburst ? (Math.random() * Math.PI * 0.45) : (0.32 + Math.random() * 1.05);
+            const spd = baseV * (0.35 + Math.random() * 0.95);
+            const ce = Math.cos(elev), se = Math.sin(elev);
+            const ca = Math.cos(az), sa = Math.sin(az);
+            const dirX = norm.x * se + (u.x * ca + v.x * sa) * ce;
+            const dirY = norm.y * se + (u.y * ca + v.y * sa) * ce;
+            const dirZ = norm.z * se + (u.z * ca + v.z * sa) * ce;
+
+            ep.alive = true;
+            ep.rx = worldPosM.x + norm.x * 15000;
+            ep.ry = worldPosM.y + norm.y * 15000;
+            ep.rz = worldPosM.z + norm.z * 15000;
+            ep.vx = dirX * spd;
+            ep.vy = dirY * spd;
+            ep.vz = dirZ * spd;
+            ep.age = 0;
+            ep.maxAge = 2.6 + Math.random() * 4.5;
+            if (isOcean && Math.random() < 0.42) {
+              ep.r = 0.72; ep.g = 0.92; ep.b = 1.0; // incandescent steam/water plume
+            } else if (isAirburst) {
+              ep.r = 1.0; ep.g = 0.85; ep.b = 0.45;
+            } else {
+              ep.r = 1.0; ep.g = 0.45 + Math.random() * 0.45; ep.b = 0.08 + Math.random() * 0.18;
+            }
+            spawned++;
+          }
+        }
+
+        function updateEjecta(dtReal, dtSim) {
+          let anyAlive = false;
+          for (let i = 0; i < MAX_EJECTA; i++) {
+            const ep = ejectaPool[i];
+            const idx = i * 3;
+            if (!ep.alive) {
+              ejectaPos[idx] = 0; ejectaPos[idx + 1] = 0; ejectaPos[idx + 2] = 0;
+              ejectaCol[idx] = 0; ejectaCol[idx + 1] = 0; ejectaCol[idx + 2] = 0;
+              continue;
+            }
+            ep.age += dtReal;
+            if (ep.age >= ep.maxAge) {
+              ep.alive = false;
+              continue;
+            }
+            // Simple gravity sub-step for ballistic sub-orbital arcs
+            const r2 = ep.rx * ep.rx + ep.ry * ep.ry + ep.rz * ep.rz;
+            const r = Math.sqrt(r2);
+            if (cfg.useGravity && r > 1e5) {
+              const gScale = -MU_EARTH / (r2 * r);
+              ep.vx += gScale * ep.rx * dtSim;
+              ep.vy += gScale * ep.ry * dtSim;
+              ep.vz += gScale * ep.rz * dtSim;
+            }
+            ep.rx += ep.vx * dtSim;
+            ep.ry += ep.vy * dtSim;
+            ep.rz += ep.vz * dtSim;
+
+            if (Math.hypot(ep.rx, ep.ry, ep.rz) < R_EARTH_M) {
+              ep.alive = false;
+              continue;
+            }
+
+            anyAlive = true;
+            const fade = Math.pow(1.0 - ep.age / ep.maxAge, 1.3);
+            ejectaPos[idx]     = ep.rx * SCENE_PER_M;
+            ejectaPos[idx + 1] = ep.ry * SCENE_PER_M;
+            ejectaPos[idx + 2] = ep.rz * SCENE_PER_M;
+            ejectaCol[idx]     = ep.r * fade;
+            ejectaCol[idx + 1] = ep.g * fade;
+            ejectaCol[idx + 2] = ep.b * fade;
+          }
+          ejectaPoints.visible = anyAlive;
+          if (anyAlive) {
+            ejectaGeo.attributes.position.needsUpdate = true;
+            ejectaGeo.attributes.color.needsUpdate = true;
+          }
+        }
+
+        // Trigger Surface Impact or Atmospheric Airburst!
+        function handleDetonation(ast, isAirburst, airburstAltM = 0) {
+          earthSpinGroup.updateMatrixWorld();
+          const worldPosM = new THREE.Vector3(ast.rx, ast.ry, ast.rz);
+          const worldPosScene = worldPosM.clone().multiplyScalar(SCENE_PER_M);
+          const localPos = earthSpinGroup.worldToLocal(worldPosScene.clone());
+          const localDir = localPos.normalize();
+
+          const terrain = sampleEarthTerrain(localDir);
+          const velVec = new THREE.Vector3(ast.vx, ast.vy, ast.vz);
+          const speedMS = velVec.length();
+          const radNormal = worldPosM.clone().normalize();
+          const sinEntry = clamp01(-velVec.dot(radNormal) / Math.max(1, speedMS));
+          const entryAngleDeg = Math.max(5, THREE.MathUtils.radToDeg(Math.asin(sinEntry)));
+
+          const report = evaluateImpactPhysics({
+            massKg: ast.massKg,
+            diamM: ast.diamM,
+            dens: ast.dens,
+            speedMS,
+            angleDeg: entryAngleDeg,
+            terrain,
+            isAirburst,
+            airburstAltM
+          });
+
+          // Visual Crater Angular Radius on Globe (true angular scale + minimum visibility floor so small craters remain inspectable)
+          const trueAngRad = isAirburst
+            ? (report.blast5PsiM / R_EARTH_M)
+            : ((report.finalDiamM * 0.5) / R_EARTH_M);
+          const visAngRad = Math.min(1.25, Math.max(0.015, trueAngRad * 1.15 + Math.min(0.025, Math.log10(Math.max(1, report.energyMt + 1)) * 0.005)));
+          const heatPower = Math.min(2.4, 0.7 + Math.log10(Math.max(1, report.energyMt + 1)) * 0.19);
+          addSurfaceCrater(localDir, visAngRad, heatPower, terrain.isOcean, isAirburst);
+
+          // Expanding Geodesic Shockwaves & Fireball Plume
+          const waveMaxRad = Math.min(Math.PI * 0.94, Math.max(0.14, visAngRad * 4.2 + Math.log10(Math.max(1, report.energyMt + 1)) * 0.075));
+          const fbMaxScene = Math.min(1.85, Math.max(0.06, visAngRad * R_CRUST_OUT * 1.45));
+          spawnFireball(localDir, fbMaxScene, isAirburst ? 0xbae6fd : 0xffaa44, isAirburst ? 0.025 : 0.004, 0.9 + Math.min(2.2, Math.log10(Math.max(1, report.energyMt + 1)) * 0.16));
+          spawnSphericalShockwave(localDir, waveMaxRad, isAirburst ? 0x38bdf8 : (terrain.isOcean ? 0x7dd3fc : 0xff7b29), 0.45 + waveMaxRad * 0.25, 0.04 + visAngRad * 0.25, isAirburst ? 1.016 : 1.007);
+          if (report.energyMt >= 1000) {
+            // Secondary global seismic P-wave pulse
+            spawnSphericalShockwave(localDir, Math.min(Math.PI * 0.95, waveMaxRad * 1.45), 0xfef08a, 0.72, 0.024, 1.004);
+          }
+
+          spawnEjectaPlume(worldPosM, speedMS, report.energyMt, terrain.isOcean, isAirburst);
+
+          // Camera Shockwave Shake & Screen Flash
+          if (cfg.sfxEnabled) {
+            playImpactSfx(report.energyMt, isAirburst);
+            const logE = Math.max(0, Math.log10(Math.max(0.01, report.energyMt)) + 2);
+            shakeIntensity = Math.min(0.32, Math.max(shakeIntensity, 0.018 + logE * 0.018));
+            const flashOp = clamp01((logE - 3.5) / 8.5) * 0.72;
+            if (flashOp > 0.03) {
+              elFlash.style.opacity = flashOp.toFixed(2);
+              setTimeout(() => { elFlash.style.opacity = '0'; }, 90);
+            }
+          }
+
+          // Update Cumulative Planetary Vital Signs
+          vitals.totalImpacts++;
+          vitals.totalMt += report.energyMt;
+          vitals.earthDeltaV += report.earthDv;
+
+          // Biosphere impact & Climate/Thermal Anomaly modeling
+          if (report.energyMt >= 1e9) {
+            // Planet-killer crustal melt & atmospheric blow-off
+            const meltAdd = clamp01(Math.pow(report.energyMt / 5e11, 0.42));
+            vitals.globalMelt = clamp01(vitals.globalMelt + meltAdd);
+            vitals.biosphere = Math.max(0, vitals.biosphere - meltAdd * 100);
+            vitals.tempAnomalyC = Math.min(4500, vitals.tempAnomalyC + 180 + meltAdd * 1800);
+          } else if (report.energyMt >= 1e5) {
+            // Chicxulub-scale impact winter + extinction stress
+            const bioLoss = Math.min(95, Math.pow(report.energyMt / 1e8, 0.45) * 76);
+            vitals.biosphere = Math.max(0, vitals.biosphere - bioLoss);
+            vitals.globalMelt = clamp01(vitals.globalMelt + (report.energyMt / 2e10));
+            // Dust & sulfate aerosols trigger global impact winter unless already molten
+            if (vitals.globalMelt < 0.15) {
+              vitals.tempAnomalyC = Math.max(-35, vitals.tempAnomalyC - Math.min(24, Math.log10(report.energyMt) * 2.2));
+            } else {
+              vitals.tempAnomalyC += 65;
+            }
+          } else if (report.energyMt >= 50) {
+            vitals.biosphere = Math.max(0, vitals.biosphere - Math.min(8, Math.log10(report.energyMt) * 0.65));
+            vitals.tempAnomalyC = Math.max(-12, vitals.tempAnomalyC - 0.35);
+          }
+
+          syncCraterUniforms();
+          updateVitalsUI();
+          renderImpactReport(ast, terrain, entryAngleDeg, speedMS, report);
+        }
+
+        // Roche Limit Tidal Breakup into Fragment Train!
+        function triggerRocheDisruption(ast) {
+          ast.canSplit = false;
+          const numFrags = 4 + Math.floor(Math.random() * 3);
+          const childMass = ast.massKg / numFrags;
+          const childDiam = Math.cbrt((6 * childMass) / (Math.PI * ast.dens));
+          const rad = new THREE.Vector3(ast.rx, ast.ry, ast.rz).normalize();
+          const vel = new THREE.Vector3(ast.vx, ast.vy, ast.vz);
+          const spd = vel.length();
+
+          for (let i = 0; i < numFrags; i++) {
+            const offset = (i - (numFrags - 1) * 0.5);
+            const jitter = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+            const posM = new THREE.Vector3(ast.rx, ast.ry, ast.rz)
+              .addScaledVector(vel.clone().normalize(), offset * Math.max(120000, ast.diamM * 1.4))
+              .addScaledVector(jitter, Math.max(45000, ast.diamM * 0.4));
+            const vChild = vel.clone()
+              .addScaledVector(rad, offset * spd * 0.015)
+              .addScaledVector(jitter, spd * 0.018);
+
+            spawnAsteroid({
+              posM,
+              velMS: vChild,
+              diamM: childDiam,
+              dens: ast.dens,
+              yieldPa: ast.yieldPa * 0.85,
+              comp: ast.comp,
+              name: `${ast.name} #${i + 1}`,
+              canSplit: false
+            });
+          }
+
+          appendLogEntry(
+            `⚡ ROCHE TIDAL BREAKUP: ${ast.name} ถูกแรงไทดัลโลกฉีกออกเป็น ${numFrags} ชิ้นที่ระยะ ${(Math.hypot(ast.rx, ast.ry, ast.rz) / R_EARTH_M).toFixed(2)} R⊕`,
+            'roche'
+          );
+        }
+
+        // UI Updates
+        function updateActiveCountBadge() {
+          elActiveCount.textContent = `${asteroids.length} IN FLIGHT`;
+        }
+
+        function updateVitalsUI() {
+          elBioPct.textContent = `${vitals.biosphere.toFixed(1)}%`;
+          elBioFill.style.width = `${vitals.biosphere.toFixed(1)}%`;
+          if (vitals.biosphere > 70) {
+            elBioFill.style.background = 'linear-gradient(90deg, #22c55e, #38bdf8)';
+            elEarthBadge.textContent = 'HABITABLE';
+            elEarthBadge.className = 'imp-badge ok';
+          } else if (vitals.biosphere > 25) {
+            elBioFill.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+            elEarthBadge.textContent = 'ECOLOGICAL CRISIS';
+            elEarthBadge.className = 'imp-badge warn';
+          } else if (vitals.globalMelt < 0.35) {
+            elBioFill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+            elEarthBadge.textContent = 'MASS EXTINCTION';
+            elEarthBadge.className = 'imp-badge crit';
+          } else {
+            elBioFill.style.background = 'linear-gradient(90deg, #dc2626, #fb923c)';
+            elEarthBadge.textContent = 'MAGMA WORLD';
+            elEarthBadge.className = 'imp-badge crit';
+          }
+
+          elEarthDt.textContent = `${vitals.tempAnomalyC >= 0 ? '+' : ''}${vitals.tempAnomalyC.toFixed(1)} °C`;
+          elEarthMelt.textContent = `${(vitals.globalMelt * 100).toFixed(1)}%`;
+          elEarthEnergy.textContent = fmtEnergyMt(vitals.totalMt);
+          const dvStr = vitals.earthDeltaV >= 1 ? `${vitals.earthDeltaV.toFixed(2)} m/s` : `${vitals.earthDeltaV.toExponential(1)} m/s`;
+          elEarthHits.textContent = `${vitals.totalImpacts} · ${vitals.earthDeltaV === 0 ? '0 m/s' : dvStr}`;
+        }
+
+        function appendLogEntry(text, cls = '') {
+          const item = document.createElement('div');
+          item.className = `imp-log-item ${cls}`;
+          item.textContent = text;
+          elLogList.prepend(item);
+          while (elLogList.children.length > 25) elLogList.removeChild(elLogList.lastChild);
+          elLogCount.textContent = String(elLogList.children.length);
+        }
+
+        function renderImpactReport(ast, terrain, angleDeg, speedMS, r) {
+          elLastType.textContent = r.severity;
+          elLastType.className = `imp-badge ${r.sevClass}`;
+
+          const extraLines = [];
+          if (r.isAirburst) {
+            extraLines.push(`<div class="imp-kv"><div class="imp-kv-k">ระดับความสูงระเบิด</div><div class="imp-kv-v">${(r.airburstAltM / 1000).toFixed(1)} km (Airburst)</div></div>`);
+            extraLines.push(`<div class="imp-kv"><div class="imp-kv-k">รัศมีคลื่นกระแทก 5 psi</div><div class="imp-kv-v">${fmtLength(r.blast5PsiM)}</div></div>`);
+          } else {
+            extraLines.push(`<div class="imp-kv"><div class="imp-kv-k">หลุมอุกกาบาต / ลึก</div><div class="imp-kv-v">${fmtLength(r.finalDiamM)} / ${fmtLength(r.craterDepthM)}</div></div>`);
+            extraLines.push(`<div class="imp-kv"><div class="imp-kv-k">แผ่นดินไหว · ลูกไฟ</div><div class="imp-kv-v">Mw ${r.seismicMw.toFixed(1)} · R ${fmtLength(r.fireballM)}</div></div>`);
+          }
+
+          let specialNote = '';
+          if (r.mantleBreach) {
+            specialNote += `<div style="font-size:0.68rem; color:#fca5a5;">🌋 ทะลุแนวแบ่งเขตโมโฮ (${terrain.mohoKm.toFixed(0)} km) ลงถึงเนื้อโลกชั้นบน!</div>`;
+          }
+          if (r.tsunami100kmM >= 1.0) {
+            specialNote += `<div style="font-size:0.68rem; color:#7dd3fc;">🌊 สึนามิ: สูง ${fmtLength(r.tsunami100kmM)} (@100 km) · ${fmtLength(r.tsunami1000kmM)} (@1,000 km)</div>`;
+          }
+
+          elLastReport.innerHTML = `
+            <div style="font-size:0.72rem; font-weight:600; color:#fff7ed;">${ast.name} @ ${terrain.coordStr}</div>
+            <div style="font-size:0.65rem; color:var(--text-muted);">${terrain.terrainStr} · v = ${fmtVelocity(speedMS / 1000)} · θ = ${angleDeg.toFixed(0)}°</div>
+            <div class="imp-kv-grid">
+              <div class="imp-kv"><div class="imp-kv-k">พลังงานจลน์</div><div class="imp-kv-v">${fmtEnergyMt(r.energyMt)}</div></div>
+              <div class="imp-kv"><div class="imp-kv-k">เทียบเท่า</div><div class="imp-kv-v">${r.chicxulubEq >= 0.05 ? `${r.chicxulubEq.toFixed(2)}× Chicxulub` : `${r.hiroshimaEq >= 1000 ? r.hiroshimaEq.toExponential(1) : r.hiroshimaEq.toFixed(0)}× Hiroshima`}</div></div>
+              ${extraLines.join('')}
+            </div>
+            ${specialNote}
+          `;
+
+          const summary = r.isAirburst
+            ? `💥 AIRBURST ${ast.name} @ ${(r.airburstAltM / 1000).toFixed(1)} km · ${fmtEnergyMt(r.energyMt)} (${terrain.coordStr})`
+            : `☄️ IMPACT ${ast.name} · ${fmtEnergyMt(r.energyMt)} · Crater ${fmtLength(r.finalDiamM)} · Mw ${r.seismicMw.toFixed(1)} (${terrain.coordStr})`;
+          appendLogEntry(summary, r.isAirburst ? 'airburst' : '');
+        }
+
+        // Sync Sliders & Pre-Launch Energy Preview
+        function syncParamLabels() {
+          valDiam.textContent = fmtLength(cfg.diamM);
+          valVel.textContent = fmtVelocity(cfg.velKmS);
+          valDens.textContent = `${Math.round(cfg.dens).toLocaleString('en-US')} kg/m³`;
+          valYield.textContent = fmtStrength(cfg.yieldPa);
+          valAngle.textContent = `${cfg.angleDeg}°`;
+          valDist.textContent = `${cfg.distRe.toFixed(1)} R⊕`;
+          valSwarm.textContent = `${cfg.swarmCount} ลูก`;
+
+          const r0 = cfg.diamM * 0.5;
+          const m = (4 / 3) * Math.PI * r0 * r0 * r0 * cfg.dens;
+          elMassPreview.textContent = fmtMass(m);
+
+          // Update pre-launch kinetic energy estimate even before hovering
+          const v0 = cfg.velKmS * 1000;
+          const vArr = cfg.useGravity
+            ? Math.sqrt(v0 * v0 + 2 * MU_EARTH * (1 / R_EARTH_M - 1 / (cfg.distRe * R_EARTH_M)))
+            : v0;
+          const eJ = computeKineticEnergyJ(m, vArr);
+          elPredEnergy.textContent = fmtEnergyMt(eJ / J_PER_MT);
+
+          if (lastAimLocalDir) {
+            updateAimPredictionStats(lastAimLocalDir, vArr, m);
+          }
+        }
+
+        function updateAimPredictionStats(localDir, vArrMS, massKg) {
+          const terrain = sampleEarthTerrain(localDir);
+          elPredCoord.textContent = terrain.coordStr;
+          elPredTerrain.textContent = terrain.terrainStr;
+
+          // Quick airburst check (Hills-Goda peak ram pressure vs yield strength)
+          const pRamPeak = RHO_ATMO_0 * vArrMS * vArrMS;
+          const likelyAirburst = cfg.useAtmo && cfg.diamM < 180 && pRamPeak > cfg.yieldPa * 4.0 && cfg.dens < 5000;
+          const rep = evaluateImpactPhysics({
+            massKg, diamM: cfg.diamM, dens: cfg.dens,
+            speedMS: vArrMS, angleDeg: cfg.angleDeg, terrain,
+            isAirburst: likelyAirburst, airburstAltM: 22000
+          });
+          elPredCrater.textContent = likelyAirburst
+            ? `Airburst คาดการณ์ · 5psi ${fmtLength(rep.blast5PsiM)}`
+            : `หลุม ~${fmtLength(rep.finalDiamM)} · Mw ${rep.seismicMw.toFixed(1)}`;
+        }
+
+        function applyPreset(presetKey) {
+          const p = PRESETS[presetKey];
+          if (!p) return;
+          cfg.presetName = p.name;
+          cfg.diamM = p.diamM;
+          cfg.velKmS = p.velKmS;
+          cfg.comp = p.comp;
+          cfg.dens = p.dens;
+          cfg.yieldPa = p.yieldPa;
+          cfg.angleDeg = p.angle;
+          cfg.distRe = p.distRe;
+
+          slDiam.value = diamToLog(cfg.diamM);
+          slVel.value = velToLog(cfg.velKmS);
+          selComp.value = cfg.comp;
+          slDens.value = densToLog(cfg.dens);
+          slYield.value = yieldToLog(cfg.yieldPa);
+          slAngle.value = cfg.angleDeg;
+          slDist.value = Math.round(cfg.distRe * 10);
+
+          document.querySelectorAll('#imp-preset-grid .imp-preset-btn').forEach((b) => {
+            b.classList.toggle('active', b.dataset.preset === presetKey);
+          });
+          syncParamLabels();
+        }
+
+        // Launch Actions
+        function fireAtWorldPoint(worldHitPoint) {
+          ensureAudio();
+          const count = cfg.launchMode === 'barrage' ? cfg.swarmCount : 1;
+          for (let i = 0; i < count; i++) {
+            const hitPt = worldHitPoint.clone();
+            let ang = cfg.angleDeg;
+            let dist = cfg.distRe;
+            let vel = cfg.velKmS;
+            let diam = cfg.diamM;
+            if (count > 1) {
+              // Spread barrage smoothly across target hemisphere with slight timing & size variation
+              const spread = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.9);
+              hitPt.add(spread).normalize().multiplyScalar(R_CRUST_OUT);
+              ang = Math.max(10, Math.min(88, cfg.angleDeg + (Math.random() - 0.5) * 28));
+              dist = cfg.distRe + i * 0.32 + Math.random() * 0.25;
+              vel = cfg.velKmS * (0.88 + Math.random() * 0.24);
+              diam = cfg.diamM * (0.65 + Math.random() * 0.7);
+            }
+            const sol = solveAimTrajectory(hitPt, ang, dist, vel);
+            spawnAsteroid({
+              posM: sol.startPosM,
+              velMS: sol.startVelMS,
+              diamM: diam,
+              dens: cfg.dens,
+              yieldPa: cfg.yieldPa,
+              comp: cfg.comp,
+              name: count > 1 ? `${cfg.presetName} #${i + 1}` : cfg.presetName
+            });
+          }
+        }
+
+        function fireOrbitalSlingshot(ray) {
+          ensureAudio();
+          // Launch from near camera plane offset along cursor ray at user's chosen speed
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          const launchScene = camera.position.clone()
+            .addScaledVector(ray.direction, 1.35)
+            .addScaledVector(camDir, 0.2);
+          // Ensure launch starts outside Earth's surface
+          if (launchScene.length() < R_CRUST_OUT * 1.25) {
+            launchScene.normalize().multiplyScalar(R_CRUST_OUT * 1.35);
+          }
+          const posM = launchScene.multiplyScalar(M_PER_SCENE);
+          const velMS = ray.direction.clone().normalize().multiplyScalar(cfg.velKmS * 1000.0);
+          spawnAsteroid({
+            posM, velMS,
+            diamM: cfg.diamM,
+            dens: cfg.dens,
+            yieldPa: cfg.yieldPa,
+            comp: cfg.comp,
+            name: `${cfg.presetName} (Orbit)`
+          });
+        }
+
+        function fireCenterTarget() {
+          // Aim at the front face of Earth currently facing the camera
+          const frontHit = camera.position.clone().normalize().multiplyScalar(R_CRUST_OUT);
+          fireAtWorldPoint(frontHit);
+        }
+
+        function fireRandomSwarm() {
+          ensureAudio();
+          const n = cfg.swarmCount;
+          const baseDir = camera.position.clone().normalize();
+          for (let i = 0; i < n; i++) {
+            const randHit = baseDir.clone()
+              .add(new THREE.Vector3((Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 1.4, (Math.random() - 0.5) * 1.6))
+              .normalize()
+              .multiplyScalar(R_CRUST_OUT);
+            const sol = solveAimTrajectory(
+              randHit,
+              15 + Math.random() * 70,
+              cfg.distRe + i * 0.28 + Math.random() * 0.4,
+              cfg.velKmS * (0.8 + Math.random() * 0.45)
+            );
+            spawnAsteroid({
+              posM: sol.startPosM,
+              velMS: sol.startVelMS,
+              diamM: cfg.diamM * (0.45 + Math.random() * 0.9),
+              dens: cfg.dens,
+              yieldPa: cfg.yieldPa,
+              comp: cfg.comp,
+              name: `Swarm #${i + 1}`
+            });
+          }
+        }
+
+        function resetEarth() {
+          while (asteroids.length > 0) disposeAsteroid(asteroids.pop());
+          while (shockwaves.length > 0) {
+            const sw = shockwaves.pop();
+            impactSurfaceGroup.remove(sw.mesh);
+            sw.geo.dispose(); sw.mat.dispose();
+          }
+          while (fireballs.length > 0) {
+            const fb = fireballs.pop();
+            impactSurfaceGroup.remove(fb.mesh);
+            fb.geo.dispose(); fb.mat.dispose();
+          }
+          for (let i = 0; i < MAX_EJECTA; i++) ejectaPool[i].alive = false;
+          ejectaPoints.visible = false;
+
+          craterRecords.length = 0;
+          vitals.totalMt = 0;
+          vitals.totalImpacts = 0;
+          vitals.biosphere = 100.0;
+          vitals.tempAnomalyC = 0.0;
+          vitals.globalMelt = 0.0;
+          vitals.earthDeltaV = 0.0;
+          shakeIntensity = 0;
+
+          syncCraterUniforms();
+          updateActiveCountBadge();
+          updateVitalsUI();
+          elLastType.textContent = 'STANDBY';
+          elLastType.className = 'imp-badge air';
+          elLastReport.innerHTML = `<div style="font-size:0.71rem; color:var(--text-secondary); line-height:1.45;">ฟื้นฟูพื้นผิวและชั้นบรรยากาศโลกเรียบร้อยแล้ว • คลิกบนโลกเพื่อยิงดาวเคราะห์น้อยใหม่</div>`;
+          elLogList.innerHTML = '';
+          elLogCount.textContent = '0';
+        }
+
+        // Update Pre-Launch 3D Preview Arc & Surface Reticle on Hover
+        function updateAimPreview(ray) {
+          if (!isActive || !cfg.showPreview) {
+            previewLine.visible = false;
+            reticleGroup.visible = false;
+            return;
+          }
+          const now = performance.now();
+          if (now - lastAimTime < 22) return; // Smooth ~45Hz preview solve cap
+          lastAimTime = now;
+
+          if (cfg.launchMode === 'slingshot') {
+            reticleGroup.visible = false;
+            syncGravityFrame();
+            const camDir = new THREE.Vector3();
+            camera.getWorldDirection(camDir);
+            const launchScene = camera.position.clone().addScaledVector(ray.direction, 1.35).addScaledVector(camDir, 0.2);
+            if (launchScene.length() < R_CRUST_OUT * 1.25) launchScene.normalize().multiplyScalar(R_CRUST_OUT * 1.35);
+            const st = {
+              rx: launchScene.x * M_PER_SCENE, ry: launchScene.y * M_PER_SCENE, rz: launchScene.z * M_PER_SCENE,
+              vx: ray.direction.x * cfg.velKmS * 1000, vy: ray.direction.y * cfg.velKmS * 1000, vz: ray.direction.z * cfg.velKmS * 1000,
+              massKg: 1e12, rEffM: 500
+            };
+            let hit = false;
+            for (let i = 0; i < PREVIEW_PTS; i++) {
+              previewPositions[i * 3]     = st.rx * SCENE_PER_M;
+              previewPositions[i * 3 + 1] = st.ry * SCENE_PER_M;
+              previewPositions[i * 3 + 2] = st.rz * SCENE_PER_M;
+              if (!hit) {
+                const r = Math.hypot(st.rx, st.ry, st.rz);
+                const spd = Math.hypot(st.vx, st.vy, st.vz);
+                const dtStep = Math.min(280, Math.max(2, (r * 0.065) / Math.max(500, spd)));
+                rk4Step(st, dtStep, false);
+                if (Math.hypot(st.rx, st.ry, st.rz) <= R_EARTH_M) hit = true;
+              }
+            }
+            previewMat.color.setHex(hit ? 0xff6b35 : 0x38bdf8);
+            previewGeo.attributes.position.needsUpdate = true;
+            previewLine.visible = true;
+            return;
+          }
+
+          const hits = raycaster.intersectObject(fullEarthMesh, false);
+          if (hits.length === 0) {
+            previewLine.visible = false;
+            reticleGroup.visible = false;
+            lastAimHitWorld = null;
+            return;
+          }
+
+          const hitPt = hits[0].point.clone();
+          lastAimHitWorld = hitPt;
+          earthSpinGroup.updateMatrixWorld();
+          lastAimLocalDir = earthSpinGroup.worldToLocal(hitPt.clone()).normalize();
+
+          // Position glowing target reticle tangent to Earth's surface
+          const norm = hitPt.clone().normalize();
+          reticleGroup.position.copy(norm).multiplyScalar(R_CRUST_OUT * 1.008);
+          reticleGroup.lookAt(norm.clone().multiplyScalar(R_CRUST_OUT * 2.0));
+          reticleGroup.visible = true;
+
+          // Compute exact curved RK4 preview arc
+          const sol = solveAimTrajectory(hitPt);
+          const pts = sol.pointsM;
+          const n = pts.length;
+          for (let i = 0; i < PREVIEW_PTS; i++) {
+            const idx = Math.min(n - 1, Math.floor((i / (PREVIEW_PTS - 1)) * (n - 1)));
+            previewPositions[i * 3]     = pts[idx][0] * SCENE_PER_M;
+            previewPositions[i * 3 + 1] = pts[idx][1] * SCENE_PER_M;
+            previewPositions[i * 3 + 2] = pts[idx][2] * SCENE_PER_M;
+          }
+          previewMat.color.setHex(0xff7b38);
+          previewGeo.attributes.position.needsUpdate = true;
+          previewLine.visible = true;
+
+          const r0 = cfg.diamM * 0.5;
+          const m = (4 / 3) * Math.PI * r0 * r0 * r0 * cfg.dens;
+          updateAimPredictionStats(lastAimLocalDir, sol.arrivalSpeedMS, m);
+        }
+
+        // Main Physics & Visual Simulation Step (Called every frame in animate())
+        function update(dt) {
+          // Always cool existing craters softly even if user exits and inspects Earth cutaway!
+          if (craterRecords.length > 0) {
+            for (let i = 0; i < craterRecords.length; i++) {
+              craterRecords[i].age += dt;
+              impactUniforms.uImpactMeta.value[i].x = craterRecords[i].age;
+            }
+          }
+
+          if (!isActive && asteroids.length === 0 && shockwaves.length === 0 && fireballs.length === 0) {
+            shakeIntensity = 0;
+            shakeOffset.set(0, 0, 0);
+            return;
+          }
+
+          const dtSimTotal = dt * SIM_BASE_SECONDS_PER_SEC * cfg.timeScale;
+          syncGravityFrame();
+
+          // Step All Active Asteroids via Adaptive Sub-Stepped RK4
+          for (let i = asteroids.length - 1; i >= 0; i--) {
+            const ast = asteroids[i];
+            if (cfg.timeScale > 0) {
+              ast.ageSec += dt;
+              const rNow = Math.hypot(ast.rx, ast.ry, ast.rz);
+              const inAtmo = rNow < R_EARTH_M + ATMO_TOP_M * 1.4;
+              const subSteps = inAtmo ? 48 : 14;
+              const subDt = dtSimTotal / subSteps;
+              let destroyed = false;
+
+              for (let s = 0; s < subSteps; s++) {
+                rk4Step(ast, subDt, true);
+                const r = Math.hypot(ast.rx, ast.ry, ast.rz);
+                const spd = Math.hypot(ast.vx, ast.vy, ast.vz);
+                if (r < ast.minDistM) ast.minDistM = r;
+
+                // 1) Roche Limit Tidal Stress Disruption Check
+                if (cfg.useRoche && ast.canSplit && ast.diamM >= 80 && r > R_EARTH_M + ATMO_TOP_M) {
+                  const dRoche = 2.44 * R_EARTH_M * Math.cbrt(RHO_EARTH / Math.max(100, ast.dens));
+                  const tidalStress = (2.0 * MU_EARTH * ast.dens * ast.r0 * ast.r0) / (r * r * r);
+                  if (r < dRoche && tidalStress > ast.yieldPa) {
+                    triggerRocheDisruption(ast);
+                    disposeAsteroid(ast);
+                    asteroids.splice(i, 1);
+                    updateActiveCountBadge();
+                    destroyed = true;
+                    break;
+                  }
+                }
+
+                // 2) Atmospheric Ablation, Plasma Heating & Hills-Goda Pancake Airburst
+                if (cfg.useAtmo && r > R_EARTH_M && r < R_EARTH_M + ATMO_TOP_M) {
+                  const alt = r - R_EARTH_M;
+                  const rhoAtm = RHO_ATMO_0 * Math.exp(-alt / ATMO_H_M);
+                  const ramP = rhoAtm * spd * spd;
+
+                  // Plasma heating glow intensity
+                  ast.plasmaHeat = Math.max(ast.plasmaHeat, clamp01(Math.log10(Math.max(1, ramP)) / 8.2));
+
+                  // Thermal mass ablation
+                  const area = Math.PI * ast.rEffM * ast.rEffM;
+                  const dm = (0.02 * rhoAtm * area * spd * spd * spd) / (2.0 * ast.ablationQ) * subDt;
+                  ast.massKg = Math.max(1, ast.massKg - dm);
+
+                  // Hills & Goda (1993) Pancake Fragmentation
+                  if (ramP > ast.yieldPa) {
+                    ast.fragmenting = true;
+                    const vSpread = spd * Math.sqrt(rhoAtm / Math.max(100, ast.dens));
+                    ast.rEffM += vSpread * subDt;
+                  }
+
+                  // Airburst condition: pancake ratio >= 5.2x OR ablated below 12% initial mass above 500 m
+                  if ((ast.rEffM / ast.r0 >= 5.2 || ast.massKg < ast.initMassKg * 0.12) && alt > 500) {
+                    handleDetonation(ast, true, alt);
+                    disposeAsteroid(ast);
+                    asteroids.splice(i, 1);
+                    updateActiveCountBadge();
+                    destroyed = true;
+                    break;
+                  }
+                } else {
+                  ast.plasmaHeat = Math.max(0, ast.plasmaHeat - dt * 1.8 / subSteps);
+                }
+
+                // 3) Surface Impact Check
+                if (r <= R_EARTH_M) {
+                  // Clamp exact surface point
+                  const corr = R_EARTH_M / Math.max(1, r);
+                  ast.rx *= corr; ast.ry *= corr; ast.rz *= corr;
+                  handleDetonation(ast, false, 0);
+                  disposeAsteroid(ast);
+                  asteroids.splice(i, 1);
+                  updateActiveCountBadge();
+                  destroyed = true;
+                  break;
+                }
+
+                // 4) Escape / Far Space Cull
+                if (r > R_EARTH_M * 60.0) {
+                  appendLogEntry(`🛸 ESCAPE / FLYBY: ${ast.name} หลุดพ้นแรงโน้มถ่วง (ใกล้สุด ${(ast.minDistM / R_EARTH_M).toFixed(2)} R⊕)`, 'flyby');
+                  disposeAsteroid(ast);
+                  asteroids.splice(i, 1);
+                  updateActiveCountBadge();
+                  destroyed = true;
+                  break;
+                }
+              }
+              if (destroyed) continue;
+
+              // Update 3D Mesh Position, Tumbling Rotation & Plasma Entry Glow
+              const sx = ast.rx * SCENE_PER_M;
+              const sy = ast.ry * SCENE_PER_M;
+              const sz = ast.rz * SCENE_PER_M;
+              ast.mesh.position.set(sx, sy, sz);
+              ast.mesh.rotateOnAxis(ast.spinAxis, dt * ast.spinSpeed * Math.min(4, Math.max(0.2, cfg.timeScale)));
+
+              const pHeat = ast.plasmaHeat;
+              ast.plasmaMat.opacity = pHeat * 0.88;
+              ast.plasmaMesh.scale.setScalar(1.0 + pHeat * 0.65);
+              ast.mat.emissive.setRGB(0.1 + pHeat * 0.9, 0.08 + pHeat * 0.45, 0.06 + pHeat * 0.12);
+              ast.mat.emissiveIntensity = 0.4 + pHeat * 2.4;
+
+              // Append Trail Point
+              ast.trailAccum += dt;
+              if (ast.trailAccum >= 0.025) {
+                ast.trailAccum = 0;
+                const buf = ast.trailBuf;
+                const maxPts = buf.length / 3;
+                if (ast.trailCount < maxPts) {
+                  const pIdx = ast.trailCount * 3;
+                  buf[pIdx] = sx; buf[pIdx + 1] = sy; buf[pIdx + 2] = sz;
+                  for (let k = ast.trailCount + 1; k < maxPts; k++) {
+                    buf[k * 3] = sx; buf[k * 3 + 1] = sy; buf[k * 3 + 2] = sz;
+                  }
+                  ast.trailCount++;
+                } else {
+                  buf.copyWithin(0, 3);
+                  buf[(maxPts - 1) * 3] = sx;
+                  buf[(maxPts - 1) * 3 + 1] = sy;
+                  buf[(maxPts - 1) * 3 + 2] = sz;
+                }
+                ast.trailGeo.attributes.position.needsUpdate = true;
+                ast.trailMat.color.setHex(pHeat > 0.25 ? 0xff7b29 : (ast.comp === 'ice' ? 0x7dd3fc : 0xfbbf24));
+              }
+            }
+          }
+
+          updateShockwaves(dt);
+          updateFireballs(dt);
+          updateEjecta(dt, dtSimTotal);
+
+          // Animate Reticle Pulse
+          if (reticleGroup.visible) {
+            const pulse = 1.0 + 0.12 * Math.sin(uTime.value * 7.0);
+            reticleOuter.scale.setScalar(pulse);
+            reticleOuter.rotation.z = uTime.value * 0.9;
+          }
+
+          // Decay Camera Shock Shake
+          if (shakeIntensity > 0.0005) {
+            shakeOffset.set(
+              (Math.random() - 0.5) * 2 * shakeIntensity,
+              (Math.random() - 0.5) * 2 * shakeIntensity,
+              (Math.random() - 0.5) * 2 * shakeIntensity
+            );
+            shakeIntensity *= Math.exp(-5.5 * dt);
+          } else {
+            shakeIntensity = 0;
+            shakeOffset.set(0, 0, 0);
+          }
+        }
+
+        // Toast Helper
+        let toastTimer = null;
+        function showToast(msg) {
+          elToast.textContent = msg;
+          elToast.classList.add('visible');
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => elToast.classList.remove('visible'), 3600);
+        }
+
+        // Activate / Deactivate Hidden Impact Mode
+        function enter() {
+          if (isActive) return;
+          isActive = true;
+          if (state.focusBody !== 'earth') {
+            switchBody('earth');
+          }
+          if (state.viewMode !== 'full') {
+            setViewMode('full');
+          }
+          document.body.classList.remove('drawer-open', 'sheet-expanded');
+          document.body.classList.add('impact-mode');
+          hoverTooltip.classList.remove('visible');
+
+          // Smoothly pull camera slightly back so curved orbital approaches look epic!
+          const curDist = camera.position.length();
+          if (curDist < 7.2) {
+            state.targetCamPos.copy(camera.position).normalize().multiplyScalar(8.4);
+            state.isCameraAnimating = true;
+          }
+
+          impBtnSpin.classList.toggle('active', state.autoRotate);
+          impBtnClouds.classList.toggle('active', state.cloudsEnabled);
+          playUnlockChime();
+          showToast('☄️ SECRET MODE UNLOCKED // PROJECT IMPACTOR — โหมดยิงดาวเคราะห์น้อยฟิสิกส์จริง');
+        }
+
+        function exit() {
+          if (!isActive) return;
+          isActive = false;
+          document.body.classList.remove('impact-mode', 'imp-open-lab', 'imp-open-tel');
+          previewLine.visible = false;
+          reticleGroup.visible = false;
+          renderer.domElement.style.cursor = 'grab';
+          showToast('กลับสู่โหมดสำรวจโครงสร้างโลกปกติ');
+        }
+
+        // Bind All Customizer UI Controls
+        document.querySelectorAll('#imp-preset-grid .imp-preset-btn').forEach((btn) => {
+          btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+        });
+
+        document.querySelectorAll('#imp-mode-row .imp-seg-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            cfg.launchMode = btn.dataset.lmode;
+            document.querySelectorAll('#imp-mode-row .imp-seg-btn').forEach((b) => b.classList.toggle('active', b === btn));
+            if (cfg.launchMode === 'aim') {
+              elHintBar.textContent = '🎯 โหมดเล็งเป้า: เลื่อนเมาส์บนโลกเพื่อดูเส้นโค้ง RK4 • คลิกเพื่อยิงดาวเคราะห์น้อย • ลากเพื่อหมุนมุมกล้อง • Esc เพื่อออก';
+            } else if (cfg.launchMode === 'slingshot') {
+              elHintBar.textContent = '🛸 โหมดยิงวงโคจร: เล็งไปในอวกาศข้างโลกเพื่อส่งเข้าวงโคจร เหวี่ยงแรงโน้มถ่วง หรือทดสอบแรงไทดัล Roche!';
+            } else {
+              elHintBar.textContent = '☄️ โหมดฝนอุกกาบาต: คลิกบนพื้นที่โลกเพื่อระดมยิงฝูงดาวเคราะห์น้อยพร้อมกัน!';
+            }
+          });
+        });
+
+        slDiam.addEventListener('input', () => { cfg.diamM = logToDiam(Number(slDiam.value)); cfg.presetName = 'Custom Asteroid'; syncParamLabels(); });
+        slVel.addEventListener('input', () => { cfg.velKmS = logToVel(Number(slVel.value)); syncParamLabels(); });
+        selComp.addEventListener('change', () => {
+          cfg.comp = selComp.value;
+          const c = COMPOSITIONS[cfg.comp];
+          if (c && cfg.comp !== 'custom') {
+            cfg.dens = c.density;
+            cfg.yieldPa = c.yieldPa;
+            slDens.value = densToLog(cfg.dens);
+            slYield.value = yieldToLog(cfg.yieldPa);
+          }
+          syncParamLabels();
+        });
+        slDens.addEventListener('input', () => { cfg.dens = logToDens(Number(slDens.value)); selComp.value = 'custom'; cfg.comp = 'custom'; syncParamLabels(); });
+        slYield.addEventListener('input', () => { cfg.yieldPa = logToYield(Number(slYield.value)); selComp.value = 'custom'; cfg.comp = 'custom'; syncParamLabels(); });
+        slAngle.addEventListener('input', () => { cfg.angleDeg = Number(slAngle.value); syncParamLabels(); });
+        slDist.addEventListener('input', () => { cfg.distRe = Number(slDist.value) / 10.0; syncParamLabels(); });
+        slSwarm.addEventListener('input', () => { cfg.swarmCount = Number(slSwarm.value); syncParamLabels(); });
+
+        chkGrav.addEventListener('change', () => { cfg.useGravity = chkGrav.checked; syncParamLabels(); });
+        chkAtmo.addEventListener('change', () => { cfg.useAtmo = chkAtmo.checked; syncParamLabels(); });
+        chkRoche.addEventListener('change', () => { cfg.useRoche = chkRoche.checked; });
+        chkMoon.addEventListener('change', () => { cfg.useMoon = chkMoon.checked; });
+        chkPrev.addEventListener('change', () => { cfg.showPreview = chkPrev.checked; if (!cfg.showPreview) { previewLine.visible = false; reticleGroup.visible = false; } });
+        chkSfx.addEventListener('change', () => { cfg.sfxEnabled = chkSfx.checked; });
+
+        document.querySelectorAll('.imp-time-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            cfg.timeScale = Number(btn.dataset.scale);
+            document.querySelectorAll('.imp-time-btn').forEach((b) => b.classList.toggle('active', b === btn));
+          });
+        });
+
+        document.getElementById('imp-btn-fire').addEventListener('click', fireCenterTarget);
+        document.getElementById('imp-btn-swarm').addEventListener('click', fireRandomSwarm);
+        document.getElementById('imp-btn-reset').addEventListener('click', resetEarth);
+        document.getElementById('imp-btn-exit').addEventListener('click', exit);
+
+        impBtnSpin.addEventListener('click', () => {
+          state.autoRotate = !state.autoRotate;
+          impBtnSpin.classList.toggle('active', state.autoRotate);
+          btnAutoRotate.classList.toggle('active', state.autoRotate);
+        });
+
+        impBtnClouds.addEventListener('click', () => {
+          state.cloudsEnabled = !state.cloudsEnabled;
+          impBtnClouds.classList.toggle('active', state.cloudsEnabled);
+          btnClouds.classList.toggle('active', state.cloudsEnabled);
+        });
+
+        document.getElementById('imp-btn-mob-lab').addEventListener('click', () => {
+          document.body.classList.toggle('imp-open-lab');
+          document.body.classList.remove('imp-open-tel');
+        });
+        document.getElementById('imp-btn-mob-tel').addEventListener('click', () => {
+          document.body.classList.toggle('imp-open-tel');
+          document.body.classList.remove('imp-open-lab');
+        });
+
+        // Secret Unlock Triggers (Zero visible clutter in normal mode!)
+        // 1) Click the top-left title strip 5 times rapidly
+        let titleClicks = [];
+        const titleStrip = document.getElementById('sim-title-strip');
+        if (titleStrip) {
+          titleStrip.addEventListener('click', () => {
+            const now = performance.now();
+            titleClicks = titleClicks.filter((t) => now - t < 4500);
+            titleClicks.push(now);
+            if (titleClicks.length >= 5) {
+              titleClicks = [];
+              isActive ? exit() : enter();
+            }
+          });
+        }
+
+        // 2) Keyboard Shortcut: Shift + A, typing "impact" or "asteroid", or Konami code
+        let keyBuf = '';
+        const konamiSeq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIdx = 0;
+        window.addEventListener('keydown', (e) => {
+          if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) return;
+          if (e.shiftKey && (e.key === 'A' || e.key === 'a') && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            isActive ? exit() : enter();
+            return;
+          }
+          if (e.key === konamiSeq[konamiIdx] || e.key.toLowerCase() === konamiSeq[konamiIdx]) {
+            konamiIdx++;
+            if (konamiIdx >= konamiSeq.length) {
+              konamiIdx = 0;
+              isActive ? exit() : enter();
+              return;
+            }
+          } else {
+            konamiIdx = 0;
+          }
+          if (e.key.length === 1) {
+            keyBuf = (keyBuf + e.key.toLowerCase()).slice(-12);
+            if (keyBuf.endsWith('impact') || keyBuf.endsWith('asteroid')) {
+              keyBuf = '';
+              isActive ? exit() : enter();
+            }
+          }
+        });
+
+        // Initialize Default Preset (Chicxulub) & Optional URL Trigger (?impact=1 or #impact)
+        applyPreset('chicxulub');
+        updateVitalsUI();
+        if (window.location.search.includes('impact=1') || window.location.hash.toLowerCase() === '#impact') {
+          setTimeout(() => enter(), 350);
+        }
+
+        return {
+          get isActive() { return isActive; },
+          get timeScale() { return cfg.timeScale; },
+          get shakeOffset() { return shakeOffset; },
+          enter,
+          exit,
+          update,
+          handlePointerMove(ray) {
+            updateAimPreview(ray);
+            renderer.domElement.style.cursor = 'crosshair';
+            hoverTooltip.classList.remove('visible');
+          },
+          handlePointerLeave() {
+            previewLine.visible = false;
+            reticleGroup.visible = false;
+          },
+          handlePointerClick(ray) {
+            if (cfg.launchMode === 'slingshot') {
+              fireOrbitalSlingshot(ray);
+              return;
+            }
+            const hits = raycaster.intersectObject(fullEarthMesh, false);
+            if (hits.length > 0) {
+              fireAtWorldPoint(hits[0].point);
+            } else {
+              // Clicking space in Aim mode still fires an orbital slingshot so every click is rewarding!
+              fireOrbitalSlingshot(ray);
+            }
+          }
+        };
+      })();
+
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+          if (impactSim.isActive) {
+            impactSim.exit();
+            return;
+          }
           if (state.focusBody === 'solar_system') {
             document.body.classList.remove('drawer-open', 'sheet-expanded');
           } else if (state.viewMode !== 'full') {
@@ -5916,6 +8598,11 @@
         }
         updatePointerNdc(e.clientX, e.clientY);
         raycaster.setFromCamera(pointerNdc, camera);
+
+        if (impactSim.isActive) {
+          impactSim.handlePointerMove(raycaster.ray);
+          return;
+        }
 
         if (state.focusBody === 'solar_system') {
           const orr = solarOrrery;
@@ -5981,6 +8668,7 @@
       renderer.domElement.addEventListener('pointerleave', () => {
         state.hoveredLayer = null;
         hoverTooltip.classList.remove('visible');
+        if (impactSim.isActive) impactSim.handlePointerLeave();
       });
 
       renderer.domElement.addEventListener('pointerup', (e) => {
@@ -5993,6 +8681,11 @@
 
         updatePointerNdc(e.clientX, e.clientY);
         raycaster.setFromCamera(pointerNdc, camera);
+
+        if (impactSim.isActive) {
+          impactSim.handlePointerClick(raycaster.ray);
+          return;
+        }
 
         if (state.focusBody === 'solar_system') {
           const orr = solarOrrery;
@@ -6097,12 +8790,13 @@
             }
           }
         } else if (state.focusBody === 'earth') {
-          // Earth Hero Mode Animation
+          // Earth Hero Mode Animation (respects Impact Mode timeScale when active)
+          const spinMul = impactSim.isActive ? Math.min(4.0, impactSim.timeScale) : 1.0;
           if (state.autoRotate && !state.isDragging) {
-            earthSpinGroup.rotation.y += dt * 0.085;
-            earthMoonPivot.rotation.y += dt * 0.025;
+            earthSpinGroup.rotation.y += dt * 0.085 * spinMul;
+            earthMoonPivot.rotation.y += dt * 0.025 * spinMul;
           }
-          uCloudOffset.value = (uCloudOffset.value + dt * 0.0042) % 1.0;
+          uCloudOffset.value = (uCloudOffset.value + dt * 0.0042 * (impactSim.isActive ? Math.max(0, Math.min(4, impactSim.timeScale)) : 1.0)) % 1.0;
 
           const targetCloudOp = state.cloudsEnabled ? (state.viewMode === 'exploded' ? 0.35 : 0.92) : 0.0;
           uCloudOpacity.value = lerp(uCloudOpacity.value, targetCloudOp, 1 - Math.exp(-14 * dt));
@@ -6143,6 +8837,9 @@
             u.uHighlight.value = lerp(u.uHighlight.value, state.hoveredLayer === id ? 1.0 : 0.0, 1 - Math.exp(-12 * dt));
             u.uSelected.value = lerp(u.uSelected.value, (state.viewMode !== 'full' && state.activeLayer === id) ? 1.0 : 0.0, 1 - Math.exp(-8 * dt));
           }
+
+          // Tick Hidden Asteroid Impact Physics Simulator
+          impactSim.update(dt);
         } else {
           // Sun & Non-Earth Planetary Hero Animation
           const asm = nonEarthHeroCache.get(state.focusBody);
@@ -6209,7 +8906,7 @@
         }
 
         // Responsive Camera Viewport Offset when drawer is open
-        const isDrawerVisible = document.body.classList.contains('drawer-open');
+        const isDrawerVisible = document.body.classList.contains('drawer-open') && !impactSim.isActive;
         const targetFrac = isDrawerVisible ? 1.0 : 0.0;
         state.drawerOffsetFrac = lerp(state.drawerOffsetFrac, targetFrac, 1 - Math.exp(-5.5 * dt));
 
@@ -6227,7 +8924,13 @@
 
         starfield.material.uniforms.uTime.value = uTime.value;
         controls.update();
+
+        // Apply non-drifting camera shockwave shake during render only
+        const sh = impactSim.shakeOffset;
+        const hasShake = (sh.x !== 0 || sh.y !== 0 || sh.z !== 0);
+        if (hasShake) camera.position.add(sh);
         renderer.render(scene, camera);
+        if (hasShake) camera.position.sub(sh);
       }
 
       animate();
